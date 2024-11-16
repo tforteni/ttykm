@@ -13,12 +13,14 @@ class Game:
             self.all_boards.append(new_board)
 
     def build_game(self): 
-        #TO DO: sets up initial game config
-        for board in self.all_boards:
+        #Sets up initial game config
+        for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
-            board.add_piece(0,0,piece)
+            if board.add_piece(0,0,piece): 
+                piece._location = index
             piece = self.player2.get_next_piece()
-            board.add_piece(3,3,piece)
+            if board.add_piece(3,3,piece):
+                piece._location = index
             
     def show_game(self):
         all_boards_repr = []

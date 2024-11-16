@@ -23,7 +23,6 @@ class CLI:
             self._game.show_game()
             #TO DO: Error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
-            copy = input("Select a copy to move\n")
             move1 = input("Select the first direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
             move2 = input("Select the second direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
             focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
