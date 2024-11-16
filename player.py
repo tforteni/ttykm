@@ -27,7 +27,6 @@ class Player:
     #TO DO: Implement simplest version of move
     #TO DO LATER: Add viable moves
 
-    #Owns piece method that will be called CLI
     def owns_piece(self, symbol):
         for piece in self._all_pieces:
             if symbol == piece.symbol:
