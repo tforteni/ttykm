@@ -58,7 +58,7 @@ class CLI:
                 else:
                     break
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
-            self._state.run_turn(copy, move1, move2, focus_era)
+            self._state.run_turn(piece, move1, move2, focus_era)
             self._turns += 1
 
 class Player1State():
@@ -67,7 +67,7 @@ class Player1State():
         self.player = player
         self.other = cli.player2
 
-    def run_turn(self, copy, move1, move2, focus_era):
+    def run_turn(self, piece, move1, move2, focus_era):
         self.player.move() #Fill in with arguements
         self._cli.set_state(Player2State(self._cli, self._cli.player2))
 
@@ -77,7 +77,7 @@ class Player2State():
         self.player = player
         self.other = cli.player1
 
-    def run_turn(self, copy, move1, move2, focus_era):
+    def run_turn(self, piece, move1, move2, focus_era):
         self.player.move() #Fill in with arguements
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
 
