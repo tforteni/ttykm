@@ -18,8 +18,8 @@ class CLI:
 
     def run(self):
         """Display the game and menu and respond to choices."""
+        self._game.build_game()
         while True: #Or while the game is not over
-            self._game.build_game()
             self._game.show_game()
             #TO DO: Error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
