@@ -1,10 +1,10 @@
 class Piece():
 
-    def __init__(self, symbol, inplay = False, alive = True, board = -1):
-        self.symbol = symbol
-        self.in_play = inplay
-        self.alive = alive
-        self.location = -1
+    def __init__(self, symbol, inplay = False, alive = False, board = -1):
+        self._symbol = symbol
+        self._in_play = inplay
+        self._alive = alive
+        self._location = board
         
     def __repr__(self):
         return self._symbol

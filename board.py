@@ -16,7 +16,8 @@ class Board():
 
     def add_piece(self, column, row, piece):
         if self.space_empty(column, row):
-            self._grid[column][row] == piece
+            self._grid[column][row] = piece
+
             
     def space_empty(self, column, row):
         return self._grid[column][row] == None
