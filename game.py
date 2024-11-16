@@ -53,3 +53,7 @@ class Game:
             board_str += "\n                          "
         board_str += "white"            
         print(board_str)
+        
+    def move_piece(self, row, column):
+        ""
+        
