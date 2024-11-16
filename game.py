@@ -25,7 +25,7 @@ class Game:
     def show_game(self):
         all_boards_repr = []
         board_str = "---------------------------------\n"
-        board_str += "                          black\n"
+        board_str += "                          black\n" #Fix this so that it changes depending on era
         
         for x in range(0, 3):
             new_board = self.all_boards[x]
