@@ -23,6 +23,15 @@ class CLI:
             self._game.show_game()
             #TO DO: Error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+            while True:
+                copy = input("Select a copy to move\n")
+                copy = str(copy)
+                if self._state.other.owns_piece(copy):
+                    print("That is not your copy")
+                # elif not self._state.player.owns_piece(copy) and not self._state.other.owns_piece(copy):
+                #     print("Not a valid copy")
+                
+
             move1 = input("Select the first direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
             move2 = input("Select the second direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
             focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
@@ -34,6 +43,7 @@ class Player1State():
     def __init__(self, cli, player):
         self._cli = cli
         self.player = player
+        self.other = cli.player2
 
     def run_turn(self):
         print("white just played")
@@ -43,6 +53,7 @@ class Player2State():
     def __init__(self, cli, player):
         self._cli = cli
         self.player = player
+        self.other = cli.player1
 
     def run_turn(self):
         print("black just played")

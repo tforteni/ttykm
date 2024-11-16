@@ -10,26 +10,34 @@ class Player:
         if self.id == "white":
             self.focus = 0
             
-            #adds 7 pieces to a player's piece list
+            #Adds 7 pieces to a player's piece list
             for x in range(0, 7):
-                new_piece = Piece(str(x+1))
-                self._all_pieces.append(new_piece)
+                new_piece = Piece(string.ascii_uppercase[x])
+                self._all_pieces.append(new_piece)     
                 
         else:
             self.focus = 2
             
-            #adds 7 pieces to a player's piece list
+            #Adds 7 pieces to a player's piece list
             for x in range(0, 7):
-                new_piece = Piece(string.ascii_uppercase[x])
-                self._all_pieces.append(new_piece)      
+                new_piece = Piece(str(x+1))
+                self._all_pieces.append(new_piece)
+             
 
     #TO DO: Implement simplest version of move
     #TO DO LATER: Add viable moves
 
     #Owns piece method that will be called CLI
+    def owns_piece(self, symbol):
+        for piece in self._all_pieces:
+            print(piece.symbol)
+        #     if symbol == piece.symbol:
+        #         print(piece.symbol)
+        #         return True
+        # return False
 
-    #returns next valid piece
     def get_next_piece(self):
+        #Returns next valid piece
         for x in self._all_pieces:
             if x.in_play == False and x.alive == True:
                 return x
