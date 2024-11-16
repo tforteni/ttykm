@@ -17,10 +17,10 @@ class Game:
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
             if board.add_piece(0,0,piece): 
-                piece._location = index
+                piece.location = index
             piece = self.player2.get_next_piece()
             if board.add_piece(3,3,piece):
-                piece._location = index
+                piece.location = index
             
     def show_game(self):
         all_boards_repr = []
