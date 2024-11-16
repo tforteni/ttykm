@@ -57,17 +57,3 @@ class Board():
             if x == self._columns-1:
                 str += '\n' + spacer
         return str
-    
-if __name__ == "__main__":
-    piece1 = Piece("A")
-    piece2 = Piece("B")
-    piece3 = Piece("X")
-    piece4 = Piece(";")
-    test = Board(4, 4)
-    test._grid[0][2] = "A"
-    test._grid[1][2] = "B"
-    test._grid[2][2] = "C"
-    test._grid[3][3] = "D"
-    
-    print(test)
-    test.swap_two_spaces(0,2,1,2)
