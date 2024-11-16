@@ -12,7 +12,7 @@ class Player:
             
             #adds 7 pieces to a player's piece list
             for x in range(0, 7):
-                new_piece = Piece(x)
+                new_piece = Piece(str(x))
                 self._all_pieces.append(new_piece)
                 
         else:
