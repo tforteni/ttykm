@@ -40,8 +40,9 @@ class Player:
             if x.in_play == False and x.alive == True:
                 return x
     
-    def move_piece(self, piece_symbol, direction, game):
-        game.move_piece(self, piece_symbol, direction)
+    def move_piece(self, row, column, direction, game):
+        # game.move_piece(self, piece_symbol, direction)
+        ""
     
 if __name__ == "__main__":
     walter = Player("white")
