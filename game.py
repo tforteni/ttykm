@@ -58,7 +58,18 @@ class Game:
         board_str += "white"            
         print(board_str)
         
-    def move_piece(self, row, column, direction):
+    def move_piece(self, row, column, direction): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
         # self.board        
         ""
         
+"""PLAN
+
+Isai: Work on enumerating all possible moves
++ Add validation checks to CLI 
++ Look into iterator pattern
++ Perhaps pick up where Teni left off with move
+
+Teni: Implement standard move
++ Command and decorators
+
+"""
