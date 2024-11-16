@@ -8,7 +8,7 @@ class Player:
         self._all_pieces = []
 
         if self.id == "white":
-            self._focus = 0
+            self.focus = 0
             
             #adds 7 pieces to a player's piece list
             for x in range(0, 7):
@@ -16,7 +16,7 @@ class Player:
                 self._all_pieces.append(new_piece)
                 
         else:
-            self._focus = 2
+            self.focus = 2
             
             #adds 7 pieces to a player's piece list
             for x in range(0, 7):
