@@ -26,15 +26,37 @@ class CLI:
             while True:
                 copy = input("Select a copy to move\n")
                 copy = str(copy)
+                piece = self._state.player.owns_piece(copy)
                 if self._state.other.owns_piece(copy):
                     print("That is not your copy")
-                # elif not self._state.player.owns_piece(copy) and not self._state.other.owns_piece(copy):
-                #     print("Not a valid copy")
-                
-
-            move1 = input("Select the first direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
-            move2 = input("Select the second direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
-            focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
+                elif not piece:
+                    print("Not a valid copy")
+                elif piece.location != self._state.player.focus:
+                    print("Cannot select a copy from an inactive era")
+                else:
+                    break
+            directions = ['n', 'e', 's', 'w', 'f', 'b']
+            while True:
+                move1 = input(f"Select the first direction to move {directions}\n")
+                if not move1 in directions:
+                    print(f"Cannot move {move1}")
+                else:
+                    break
+            while True:
+                move2 = input(f"Select the second direction to move {directions}\n")
+                if not move2 in directions:
+                    print(f"Cannot move {move2}")
+                else:
+                    break
+            while True:
+                eras = ['past', 'present', 'future']
+                focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
+                if focus_era not in eras:
+                    print("Not a valid era")
+                elif eras.index(focus_era) == self._state.player.focus:
+                    print("Cannot select the current era")
+                else:
+                    break
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             self._state.run_turn()
             self._turns += 1
