@@ -20,7 +20,6 @@ class Board():
             piece.in_play = True
             return True
         return False
-
             
     def space_empty(self, column, row):
         return self._grid[column][row] == None
