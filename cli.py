@@ -19,6 +19,7 @@ class CLI:
         """Display the game and menu and respond to choices."""
         while True: #Or while the game is not over
             self._game.show_game()
+            #TO DO: Error checking
             copy = input("Select a copy to move\n")
             move1 = input("Select the first direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
             move2 = input("Select the second direction to move ['n', 'e', 's', 'w', 'f', 'b']\n")
