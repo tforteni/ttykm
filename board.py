@@ -19,7 +19,6 @@ class Board():
             self._grid[column][row] = piece
             return True
         return False
-
             
     def space_empty(self, column, row):
         return self._grid[column][row] == None
