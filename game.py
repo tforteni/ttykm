@@ -6,6 +6,8 @@ class Game:
         self.player1 = player1
         self.player2 = player2
         self.all_boards = []
+        
+        #initializes Game object with 3 boards
         for x in range(0, 3):
             new_board = Board(4,4)
             self.all_boards.append(new_board)
