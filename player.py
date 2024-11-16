@@ -30,11 +30,10 @@ class Player:
     #Owns piece method that will be called CLI
     def owns_piece(self, symbol):
         for piece in self._all_pieces:
-            print(piece.symbol)
-        #     if symbol == piece.symbol:
-        #         print(piece.symbol)
-        #         return True
-        # return False
+            if symbol == piece.symbol:
+                print(piece.symbol)
+                return True
+        return False
 
     def get_next_piece(self):
         #Returns next valid piece
