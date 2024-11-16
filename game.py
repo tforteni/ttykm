@@ -17,9 +17,13 @@ class Game:
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
             if board.add_piece(3,3,piece): 
+                piece.row = 3
+                piece.column = 3
                 piece.location = index
             piece = self.player2.get_next_piece()
             if board.add_piece(0,0,piece):
+                piece.row = 0
+                piece.column = 0
                 piece.location = index
             
     def show_game(self):
