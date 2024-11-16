@@ -1,6 +1,6 @@
 class Piece():
 
-    def __init__(self, symbol, inplay = False, alive = False, board = -1):
+    def __init__(self, symbol, inplay = False, alive = True, board = -1):
         self._symbol = symbol
         self._in_play = inplay
         self._alive = alive
