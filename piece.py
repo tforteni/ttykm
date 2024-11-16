@@ -5,8 +5,6 @@ class Piece():
             self._symbol = symbol
         else:
             self._symbol = "E" # "E" for Error
-            
-            
-        
+               
     def __repr__(self):
         return self._symbol

@@ -13,6 +13,10 @@ class Board():
             for y in range(0, self._rows):
                 to_add.append(None)
             self._grid.append(to_add)
+
+    def add_piece(self, column, row, piece):
+        if self.space_empty(column, row):
+            self._grid[column][row] == piece
             
     def space_empty(self, column, row):
         return self._grid[column][row] == None
