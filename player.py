@@ -29,13 +29,13 @@ class Player:
     #TO DO LATER: Add viable moves
 
     #Owns piece method that will be called CLI
-<<<<<<< Updated upstream
 
+    #returns next valid piece
     def get_next_piece(self):
-        return Piece("A")
-=======
+        for x in self._all_pieces:
+            if x.in_play == False and x.alive == True:
+                return x
     
 if __name__ == "__main__":
     walter = Player("white")
     
->>>>>>> Stashed changes
