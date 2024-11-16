@@ -25,7 +25,14 @@ class Game:
     def show_game(self):
         all_boards_repr = []
         board_str = "---------------------------------\n"
-        board_str += "                          black\n" #Fix this so that it changes depending on era
+        if self.player2.focus == 0:
+            board_str += "  "
+        elif self.player2.focus == 1:
+            board_str += "              "
+        elif self.player2.focus == 2:
+            board_str += "                          "
+
+        board_str += "black\n"
         
         for x in range(0, 3):
             new_board = self.all_boards[x]
@@ -38,5 +45,11 @@ class Game:
                 if y != 0:
                     board_str+= "   "
                 board_str += all_boards_repr[y][x]
-        board_str += "\n  white"            
+        if self.player1.focus == 0:
+            board_str += "\n  "
+        elif self.player1.focus == 1:
+            board_str += "\n              "
+        elif self.player1.focus == 2:
+            board_str += "\n                          "
+        board_str += "white"            
         print(board_str)
