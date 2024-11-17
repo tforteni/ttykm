@@ -180,6 +180,10 @@ class Game:
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
                 if board != x.location["board"]:
                     continue
+            if board - 1 == x.location["board"]:
+                if all(piece.alive == False or piece.in_play == True for piece in player._all_pieces):
+                    continue
+                    
             valid_moves.append(x.symbol)
             new_locations.append(x.location)
 
@@ -192,26 +196,40 @@ if __name__ == "__main__":
     player1._all_pieces[0].row = 1
     player1._all_pieces[0].column = 0
     player1._all_pieces[0].location = 1
+    player1._all_pieces[0].alive = True
+    player1._all_pieces[0].in_play = True
         
     player1._all_pieces[1].row = 1
     player1._all_pieces[1].column = 0
     player1._all_pieces[1].location = 1
+    player1._all_pieces[1].alive = True
+    player1._all_pieces[1].in_play = True
     
+    player1._all_pieces[2].alive = False
+    player1._all_pieces[2].in_play = False
+    
+    player1._all_pieces[3].alive = True
+    player1._all_pieces[3].in_play = True
     
     player1._all_pieces[4].row = 0
     player1._all_pieces[4].column = 1
     player1._all_pieces[4].location = 2
-    
+    player1._all_pieces[4].alive = True
+    player1._all_pieces[4].in_play = True
     
     player1._all_pieces[5].row = 1
     player1._all_pieces[5].column = 0
     player1._all_pieces[5].location = 2
-    
+    player1._all_pieces[5].alive = True
+    player1._all_pieces[5].in_play = True
 
-    
     player1._all_pieces[6].row = 0
     player1._all_pieces[6].column = 0
     player1._all_pieces[6].location = 2
+    player1._all_pieces[6].alive = True
+    player1._all_pieces[6].in_play = True
+
+    
     player2 = Player("brown")
     game = Game(player1, player2)
     
