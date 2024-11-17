@@ -53,6 +53,8 @@ class Player:
             row += dirs[direction]
         if direction in ["e", "w"]:
             column += dirs[direction]
+        if direction in ["f", "b"]:
+            board += dirs[direction]
         game.move_piece(piece, row, column, board, game, self, direction)
     
 if __name__ == "__main__":

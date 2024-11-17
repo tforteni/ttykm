@@ -18,8 +18,12 @@ class Game:
         #Sets up initial game config
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
-            if board.add_piece(3,3,piece): 
-                piece.row = 3
+            # if board.add_piece(3,3,piece): 
+            #     piece.row = 3
+            #     piece.column = 3
+            #     piece.location = index
+            if board.add_piece(2,3,piece): 
+                piece.row = 2
                 piece.column = 3
                 piece.location = index
             piece = self.player2.get_next_piece()
@@ -28,8 +32,8 @@ class Game:
                 piece.column = 0
                 piece.location = index
             piece = self.player2.get_next_piece()#remove this
-            if board.add_piece(2,3,piece):
-                piece.row = 2
+            if board.add_piece(1,3,piece):
+                piece.row = 1
                 piece.column = 3
                 piece.location = index
             

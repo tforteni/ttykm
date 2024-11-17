@@ -25,6 +25,11 @@ class Board():
 
     def remove_piece(self, row, column):
         self._grid[row][column] = None
+
+    def kill_piece(self, row, column, piece):
+        self.remove_piece(row, column)
+        piece.alive = False
+        piece.location = -1
             
     # I'm using occupied_by instead
     # def space_empty(self, row, column): 
