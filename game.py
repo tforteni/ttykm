@@ -58,9 +58,13 @@ class Game:
         board_str += "white"            
         print(board_str)
         
-    def move_piece(self, row, column, direction): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
-        # self.board        
-        ""
+    def move_piece(self, piece, row, column, board_id, game, player, leave_copy=False): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
+        board = self.all_boards[board_id]
+        if not leave_copy:
+            board.remove_piece(piece.row, piece.column)
+        board.add_piece(row, column, piece)
+
+
         
 """PLAN
 

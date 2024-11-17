@@ -39,9 +39,20 @@ class Player:
             if x.in_play == False and x.alive == True:
                 return x
     
-    def move_piece(self, row, column, direction, game):
-        # game.move_piece(self, piece_symbol, direction)
-        ""
+    def move_piece(self, piece, direction, row, column, game):
+        dirs = {
+            "n": -1,
+            "e": 1,
+            "s": 1,
+            "w": -1,
+            "f": 1,
+            "b": -1}
+        board = self.focus
+        if direction in ["n", "s"]:
+            row += dirs[direction]
+        if direction in ["e", "w"]:
+            column += dirs[direction]
+        game.move_piece(piece, row, column, board, game, self)
     
 if __name__ == "__main__":
     walter = Player("white")
