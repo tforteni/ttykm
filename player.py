@@ -27,6 +27,9 @@ class Player:
     #TO DO: Implement simplest version of move
     #TO DO LATER: Add viable moves
 
+    def copies_in_era(self, era):
+        return [piece for piece in self._all_pieces if piece.in_play == True and piece.location == era]
+
     def owns_piece(self, symbol):
         for piece in self._all_pieces:
             if symbol == piece.symbol:

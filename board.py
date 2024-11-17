@@ -26,6 +26,7 @@ class Board():
 
     def remove_piece(self, row, column, piece):
         self._grid[row][column] = None
+        piece.in_play = False
         piece.row = -1
         piece.column = -1
         piece.location = -1

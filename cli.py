@@ -19,35 +19,41 @@ class CLI:
     def run(self):
         """Display the game and menu and respond to choices."""
         self._game.build_game()
-        while True: #Or while the game is not over
+        while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
-            while True:
-                copy = input("Select a copy to move\n")
-                copy = str(copy)
-                piece = self._state.player.owns_piece(copy)
-                if self._state.other.owns_piece(copy):
-                    print("That is not your copy")
-                elif not piece:
-                    print("Not a valid copy")
-                elif piece.location != self._state.player.focus:
-                    print("Cannot select a copy from an inactive era")
-                else:
-                    break
-            directions = ['n', 'e', 's', 'w', 'f', 'b']
-            while True:
-                move1 = input(f"Select the first direction to move {directions}\n")
-                if not move1 in directions:
-                    print(f"Cannot move {move1}")
-                else:
-                    break
-            while True:
-                move2 = input(f"Select the second direction to move {directions}\n")
-                if not move2 in directions:
-                    print(f"Cannot move {move2}")
-                else:
-                    break
+            if not self._state.player.copies_in_era(self._state.player.focus):
+                print("No copies to move")
+                copy = None
+                move1 = None
+                move2 = None
+            else:
+                while True:
+                    copy = input("Select a copy to move\n")
+                    copy = str(copy)
+                    piece = self._state.player.owns_piece(copy)
+                    if self._state.other.owns_piece(copy):
+                        print("That is not your copy")
+                    elif not piece:
+                        print("Not a valid copy")
+                    elif piece.location != self._state.player.focus:
+                        print("Cannot select a copy from an inactive era")
+                    else:
+                        break
+                directions = ['n', 'e', 's', 'w', 'f', 'b']
+                while True:
+                    move1 = input(f"Select the first direction to move {directions}\n")
+                    if not move1 in directions:
+                        print(f"Cannot move {move1}")
+                    else:
+                        break
+                while True:
+                    move2 = input(f"Select the second direction to move {directions}\n")
+                    if not move2 in directions:
+                        print(f"Cannot move {move2}")
+                    else:
+                        break
             while True:
                 eras = ['past', 'present', 'future']
                 focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
@@ -60,6 +66,11 @@ class CLI:
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
             self._turns += 1
+        again = input("Play again?\n")
+        if again == "yes":
+            print("restart game")
+        else:
+            sys.exit(0)
 
 class Player1State():
     def __init__(self, cli, player):

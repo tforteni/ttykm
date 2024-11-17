@@ -14,6 +14,16 @@ class Game:
             new_board = Board(4,4)
             self.all_boards.append(new_board)
 
+    def is_over(self, player, other):
+        eras = [0,0,0]
+        eras[0] = len(player.copies_in_era(0))
+        eras[1] = len(player.copies_in_era(1))
+        eras[2] = len(player.copies_in_era(2))
+        if eras.count(0) >= 2:
+            print(f"{other.id} has won")
+            return True
+        return False
+
     def build_game(self): 
         #Sets up initial game config
         for index, board in enumerate(self.all_boards):
