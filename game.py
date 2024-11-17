@@ -63,12 +63,13 @@ class Game:
         if not leave_copy:
             board.remove_piece(piece.row, piece.column)
         board.add_piece(row, column, piece)
-
-
     
     def enumerate_possible_moves(self, piece):
         possible_moves =  []
         moves_dictionary =  ["n", "s", "e", "w", "b", "f"]
+        
+        row= piece.row
+        column = piece.column
         
                 
         
