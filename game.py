@@ -180,6 +180,7 @@ class Game:
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
                 if board != x.location["board"]:
                     continue
+            # checks to see if the player does not have any pieces in the case of a movement to the past
             if board - 1 == x.location["board"]:
                 if all(piece.alive == False or piece.in_play == True for piece in player._all_pieces):
                     continue
@@ -209,7 +210,7 @@ if __name__ == "__main__":
     player1._all_pieces[2].in_play = False
     
     player1._all_pieces[3].alive = True
-    player1._all_pieces[3].in_play = True
+    player1._all_pieces[3].in_play = False
     
     player1._all_pieces[4].row = 0
     player1._all_pieces[4].column = 1
