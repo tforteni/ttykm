@@ -78,8 +78,8 @@ class Game:
             game.set_move_strategy(Move())
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
     
-    def enumerate_possible_moves(self, column, row, board, player):
-        round1 = self.enumerate_possible_moves_helper(column, row, board, player)
+    def enumerate_possible_moves(self, symbol, row, column, board, player):
+        round1 = self.enumerate_possible_moves_helper(symbol, row, column, board, player)
         round1_possible_moves = round1[0]
         round1_locations = round1[1]
         final_list = []
@@ -87,25 +87,30 @@ class Game:
         # goes through the possible moves from a "first round", uses the locations after the movement
         # is applied, and then adds all variations to the first round in a list
         for x in range(0, len(round1_possible_moves)):
-            round2 = self.enumerate_possible_moves_helper(round1_locations[x]["column"],
+            round2 = self.enumerate_possible_moves_helper(symbol,
                                                           round1_locations[x]["row"],
+                                                        round1_locations[x]["column"],
                                                           round1_locations[x]["board"],
-                                                          player)
+                                                          player, round1_possible_moves[x])
             round2_possible_moves = round2[0]            
 
             for y in range(0, len(round2_possible_moves)):
                 final_list.append((round1_possible_moves[x], round2_possible_moves[y]))
-                
-        # if there are no viable second moves, then the solo moves are added as a pair with None
-        if len(final_list) == 0:
-            for x in range(0, len(round1_possible_moves)):
+            if len(round2_possible_moves) == 0:
                 final_list.append((round1_possible_moves[x], None))
+                
+        # NOTICE: IN THE LIST OF POSSIBLE MOVES, IF A DIRECTION CANNOT LEAD TO ANY MORE FOLLOWING DIRECTIONS,
+        # THAT DIRECTION AND NONE ARE ADDED TO THE LIST
+        
+        # if len(final_list) == 0:
+        #     for x in range(0, len(round1_possible_moves)):
+        #         final_list.append((round1_possible_moves[x], None))
                 
         return final_list
 
     
     #Assumes the piece is a piece is a valid Piece object
-    def enumerate_possible_moves_helper(self, column, row, board, player):
+    def enumerate_possible_moves_helper(self, symbol, row, column, board, player, prev_move = ""):
         class AbstractCommand:
             def execute(self):
                 raise NotImplemented()
@@ -152,37 +157,45 @@ class Game:
             def execute(self):
                 self.location["board"] = self.location["board"] - 1 
         
-        
         # location =  {"column" : piece.column, "row" : piece.row, "board" : piece.location}
-        moves_round_one = [north({"column" : column, "row" : row, "board" : board}), 
-                           east({"column" : column, "row" : row, "board" : board}), 
-                           south({"column" : column, "row" : row, "board" : board}), 
-                           west({"column" : column, "row" : row, "board" : board}), 
-                           forward({"column" : column, "row" : row, "board" : board}), 
-                           backward({"column" : column, "row" : row, "board" : board})]
+        moves_round_one = [north({ "row" : row,"column" : column, "board" : board}), 
+                           east({ "row" : row,"column" : column, "board" : board}), 
+                           south({ "row" : row,"column" : column, "board" : board}), 
+                           west({ "row" : row,"column" : column, "board" : board}), 
+                           forward({ "row" : row,"column" : column, "board" : board}), 
+                           backward({ "row" : row,"column" : column, "board" : board})]
         valid_moves = []
         new_locations = []
-
         
         for x in moves_round_one:
             x.execute()
             
             #immediately skips to the next iteration if piece is out of bounds
-            if not (0 <= x.location["column"] < self.all_boards[0]._columns
-                    and 0 <= x.location["row"] < self.all_boards[0]._rows
+            if not (0 <= x.location["row"] < self.all_boards[0]._rows
+                    and 0 <= x.location["column"] < self.all_boards[0]._columns
                     and 0 <= x.location["board"] < len(self.all_boards)):
                 continue
+            
             #checks to see if the location where the piece moved is occupied by not none
             if self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]) != None:
+                chosen_piece = self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"])
                 #checks to see if the player does not own this piece, if so, continue to next iteration
-                if player.owns_piece(self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"])) == None:
-                    continue
+                
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
                 if board != x.location["board"]:
+                    continue                
+                if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:  
                     continue
+                
             # checks to see if the player does not have any pieces in the case of a movement to the past
-            if board - 1 == x.location["board"]:
-                if all(piece.alive == False or piece.in_play == True for piece in player._all_pieces):
+            if board == x.location["board"] + 1:
+                extras = 0
+                for piece in player._all_pieces:    
+                    if piece.alive == True and piece.in_play == False:
+                        extras += 1
+                if prev_move == "b":
+                    extras -= 1
+                if extras <= 0:
                     continue
                     
             valid_moves.append(x.symbol)
@@ -190,39 +203,94 @@ class Game:
 
         return [valid_moves, new_locations]
 
+        #TO DO : IMPLEMENT BETTER PIECES. MAYBE USE AN ITERATOR CLASS
+    def better_pieces(self, player): 
+        
+        class PiecesIterable:
+            def __init__(self, game, player):
+                self.game = game
+                self.player = player
+
+            def __iter__(self):
+                return PiecesIterator(self.game, self.player)
+
+        class PiecesIterator:
+            def __init__(self, game, player):
+                self.game = game
+                self.player = player
+
+                self.index = 0
+
+            def __next__(self):
+                if self.index == len(self.player._all_pieces):
+                    raise StopIteration()
+
+                piece = self.player._all_pieces[self.index]
+                self.index += 1 
+                if piece.alive == True and piece.in_play == True and piece.location == self.player.focus:
+                    possible_moves = self.game.enumerate_possible_moves(piece.symbol, piece.column, piece.row, piece.location, self.player)
+                    if len(possible_moves) == 0:
+                        return 0
+                    if any(x[1] != None for x in possible_moves):
+                        return 2
+                    else:
+                        return 1
+                        
+                        
+                else:
+                    return 0
+
+            def __iter__(self):
+                return self
+
+        iterate_pieces = PiecesIterable(self, player)
+        prelist = []
+        for x in iterate_pieces:
+            prelist.append(x)
+        return max(prelist)
+        
+        
+
+
 from player import Player    
 if __name__ == "__main__":
     player1 = Player("white")
+    player2 = Player("brown")
+    game = Game(player1, player2)
     
-    player1._all_pieces[0].row = 1
-    player1._all_pieces[0].column = 0
-    player1._all_pieces[0].location = 1
-    player1._all_pieces[0].alive = True
-    player1._all_pieces[0].in_play = True
+    player1.focus= 2
+    
+    player1._all_pieces[0].alive = False
+    player1._all_pieces[0].in_play = False
         
-    player1._all_pieces[1].row = 1
-    player1._all_pieces[1].column = 0
-    player1._all_pieces[1].location = 1
     player1._all_pieces[1].alive = True
-    player1._all_pieces[1].in_play = True
+    player1._all_pieces[1].in_play = False
     
-    player1._all_pieces[2].alive = False
-    player1._all_pieces[2].in_play = False
+    player1._all_pieces[2].row = 1
+    player1._all_pieces[2].column = 0
+    player1._all_pieces[2].location = 1
+    player1._all_pieces[2].alive = True
+    player1._all_pieces[2].in_play = True
     
+    player1._all_pieces[3].row = 0
+    player1._all_pieces[3].column = 1
+    player1._all_pieces[3].location = 1
     player1._all_pieces[3].alive = True
-    player1._all_pieces[3].in_play = False
+    player1._all_pieces[3].in_play = True
     
     player1._all_pieces[4].row = 0
     player1._all_pieces[4].column = 1
-    player1._all_pieces[4].location = 2
+    player1._all_pieces[4].location = 1
     player1._all_pieces[4].alive = True
     player1._all_pieces[4].in_play = True
-    
-    player1._all_pieces[5].row = 1
-    player1._all_pieces[5].column = 0
-    player1._all_pieces[5].location = 2
-    player1._all_pieces[5].alive = True
-    player1._all_pieces[5].in_play = True
+        
+    # player1._all_pieces[5].row = 1
+    # player1._all_pieces[5].column = 0
+    # player1._all_pieces[5].location = 2
+    # player1._all_pieces[5].alive = True
+    # player1._all_pieces[5].in_play = True
+    player1._all_pieces[5].alive = False
+    player1._all_pieces[5].in_play = False
 
     player1._all_pieces[6].row = 0
     player1._all_pieces[6].column = 0
@@ -230,26 +298,35 @@ if __name__ == "__main__":
     player1._all_pieces[6].alive = True
     player1._all_pieces[6].in_play = True
 
+    player2._all_pieces[6].row = 0
+    player2._all_pieces[6].column = 1
+    player2._all_pieces[6].location = 2
+    player2._all_pieces[6].alive = True
+    player2._all_pieces[6].in_play = True
+
+
+    game.all_boards[1]._grid[1][0] = player1._all_pieces[2]
+    game.all_boards[1]._grid[0][1] = player1._all_pieces[3]
     
-    player2 = Player("brown")
-    game = Game(player1, player2)
-    
-    game.all_boards[2]._grid[1][0] = player1._all_pieces[5]
     game.all_boards[2]._grid[0][1] = player1._all_pieces[4]
+    # game.all_boards[2]._grid[1][0] = player1._all_pieces[5]
     game.all_boards[2]._grid[0][0] = player1._all_pieces[6]
-    game.all_boards[1]._grid[1][0] = player1._all_pieces[0]
-    game.all_boards[1]._grid[0][1] = player1._all_pieces[1]
-
-
     
-    test = game.enumerate_possible_moves(player1._all_pieces[6].column,
+    # game.all_boards[2]._grid[0][1] = player2._all_pieces[6]
+    
+    test = game.enumerate_possible_moves(player1._all_pieces[6].symbol,
                                         player1._all_pieces[6].row,
+                                        player1._all_pieces[6].column,
                                         player1._all_pieces[6].location,
                                         player1)
-    
+       
     for x in test:
         print(x, '\n')
     game.show_game()
+    
+    print(game.better_pieces(player1))
+    
+    
         
         
 """PLAN

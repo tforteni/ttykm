@@ -3,17 +3,31 @@ from piece import Piece
 class Board(): 
 
     def __init__(self, rows = 4, columns = 4):
+        # class Grid():
+        #     def __init__(self, rows, columns):
+        #         self._grid = []
+        #         for x in range(0, rows):
+        #             self._grid.append([])
+        #             for y in range(0, columns):
+        #                 self._grid[x].append(None)
+                        
+        #     def __getitem__(self, row):
+        #         return self._grid[row]
+
+        #     def __setitem__(self, row, column, value):
+        #         print ("A")
+                
         self._rows = rows
         self._columns = columns 
         self._grid = []
-        
+            
         #Initialise grid to contain None in every space
-        for x in range(0, self._rows):
+        for x in range(0, self._columns):
             to_add = []
-            for y in range(0, self._columns):
+            for y in range(0, self._rows):
                 to_add.append(None)
             self._grid.append(to_add)
-
+            
     def add_piece(self, row, column, piece, board_id):
         if not self.occupied(row, column):
             self._grid[row][column] = piece
@@ -71,11 +85,17 @@ class Board():
             for y in range(0, self._columns):
                 if y == 0:
                     str += "\n" + "|" 
-                if self._grid[x][y] == None:
+                if self._grid[y][x] == None:
                     str+= " "
                 else:
-                    str+= f"{self._grid[x][y]}"
+                    str+= f"{self._grid[y][x]}"
                 str+= "|"
             if x == self._rows-1:
                 str += '\n' + spacer
         return str
+    
+    
+# if __name__ == "__main__":
+#     board = Board(4, 4)
+#     board._grid[0][1] = "A"
+#     print(board)

@@ -24,7 +24,13 @@ class CLI:
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
-            if not self._state.player.copies_in_era(self._state.player.focus):
+            
+            #Gives a number from 0, 1, and 2. The max number of moves all pieces are able to move.
+            #0- all pieces cannot move at all
+            #1- at least one piece can move once
+            #2- at least one piece can move twice
+            all_player_pieces = self._game.better_pieces(self._state.player)
+            if not self._state.player.copies_in_era(self._state.player.focus) or all_player_pieces == 0:
                 print("No copies to move")
                 copy = None
                 move1 = None
@@ -34,24 +40,47 @@ class CLI:
                     copy = input("Select a copy to move\n")
                     copy = str(copy)
                     piece = self._state.player.owns_piece(copy)
+                    enumerated_moves = []
+                    #if piece cannot move, pick another (earlier check guarantees there is at least one piece that can move at least once)
+
                     if self._state.other.owns_piece(copy):
                         print("That is not your copy")
                     elif not piece:
                         print("Not a valid copy")
                     elif piece.location != self._state.player.focus:
                         print("Cannot select a copy from an inactive era")
+
                     else:
-                        break
+                        enumerated_moves = self._game.enumerate_possible_moves(piece.symbol,
+                                                                                piece.row,
+                                                                                piece.column,
+                                                                                piece.location,
+                                                                                self._state.player)
+                        if len(enumerated_moves) == 0:
+                            print("That copy cannot move")
+                        #if chosen piece can only move once, then check if there is at least one pieec that can move twice
+                        elif len(enumerated_moves) == 1:
+                            if all_player_pieces == 2:
+                                print("Select a copy that can move more than once")  
+                        else:                      
+                            break
                 directions = ['n', 'e', 's', 'w', 'f', 'b']
                 while True:
                     move1 = input(f"Select the first direction to move {directions}\n")
-                    if not move1 in directions:
+                    #ADDED: checks to see if the chosen move is within possible moves
+                    if not move1 in directions or all(x[0] != move1 for x in enumerated_moves):
                         print(f"Cannot move {move1}")
                     else:
                         break
                 while True:
+                    #essentially, if the first move chosen results in no second move being able to be made
+                    if not any(x[0] == move1 and x[1] != None for x in enumerated_moves):
+                        move2 = None
+                        break
+                    
                     move2 = input(f"Select the second direction to move {directions}\n")
-                    if not move2 in directions:
+                    #checks to see if there is one viable move with move1 and move2. If so, move2 is valid
+                    if not move2 in directions and not any(x[0] == move1 and x[1] == move2 for x in enumerated_moves):
                         print(f"Cannot move {move2}")
                     else:
                         break
