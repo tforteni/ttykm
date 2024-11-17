@@ -15,7 +15,7 @@ class Board():
             self._grid.append(to_add)
 
     def add_piece(self, row, column, piece):
-        if self.space_empty(row, column):
+        if not self.occupied(row, column):
             self._grid[row][column] = piece
             piece.row = row            
             piece.column = column
@@ -28,8 +28,12 @@ class Board():
         self._grid[row][column] = None
         print(self._grid[row][column])
             
-    def space_empty(self, row, column):
-        return self._grid[row][column] == None
+    # I'm using occupied_by instead
+    # def space_empty(self, row, column): 
+    #     return self._grid[row][column] == None
+
+    def occupied(self, row, column):
+        return self._grid[row][column]
     
     def swap_two_spaces(self, row1, column1, row2, column2):
         holder = self._grid[row1][column1]
