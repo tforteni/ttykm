@@ -1,5 +1,5 @@
 from board import Board
-from movestrategy import Move, PushMove
+from movestrategy import Move, PushMove, TimeMove
 
 class Game:
     
@@ -18,24 +18,9 @@ class Game:
         #Sets up initial game config
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
-            # if board.add_piece(3,3,piece): 
-            #     piece.row = 3
-            #     piece.column = 3
-            #     piece.location = index
-            if board.add_piece(2,3,piece): 
-                piece.row = 2
-                piece.column = 3
-                piece.location = index
+            board.add_piece(3,3,piece, index)
             piece = self.player2.get_next_piece()
-            if board.add_piece(0,0,piece):
-                piece.row = 0
-                piece.column = 0
-                piece.location = index
-            piece = self.player2.get_next_piece()#remove this
-            if board.add_piece(1,3,piece):
-                piece.row = 1
-                piece.column = 3
-                piece.location = index
+            board.add_piece(0,0,piece, index)
             
     def show_game(self):
         all_boards_repr = []
@@ -75,7 +60,9 @@ class Game:
     def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
         print("calling game move piece\n")
         board = self.all_boards[board_id]
-        if board.occupied(row, column): #could add check for the kind of piece that occupies it
+        if direction in ["f", "b"]:
+            game.set_move_strategy(TimeMove())
+        elif board.occupied(row, column): #could add check for the kind of piece that occupies it
             game.set_move_strategy(PushMove())
         else: 
             game.set_move_strategy(Move())

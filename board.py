@@ -14,22 +14,25 @@ class Board():
                 to_add.append(None)
             self._grid.append(to_add)
 
-    def add_piece(self, row, column, piece):
+    def add_piece(self, row, column, piece, board_id):
         if not self.occupied(row, column):
             self._grid[row][column] = piece
             piece.row = row            
             piece.column = column
             piece.in_play = True
+            piece.location = board_id
             return True
         return False
 
-    def remove_piece(self, row, column):
+    def remove_piece(self, row, column, piece):
         self._grid[row][column] = None
+        piece.row = -1
+        piece.column = -1
+        piece.location = -1
 
     def kill_piece(self, row, column, piece):
         self.remove_piece(row, column)
         piece.alive = False
-        piece.location = -1
             
     # I'm using occupied_by instead
     # def space_empty(self, row, column): 

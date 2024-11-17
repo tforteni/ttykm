@@ -51,7 +51,7 @@ class CLI:
             while True:
                 eras = ['past', 'present', 'future']
                 focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
-                if focus_era not in eras:
+                if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
                     print("Not a valid era")
                 elif eras.index(focus_era) == self._state.player.focus:
                     print("Cannot select the current era")
@@ -69,7 +69,7 @@ class Player1State():
 
     def run_turn(self, piece, move1, move2, era_index):
         self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        # self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player2State(self._cli, self._cli.player2))
 
@@ -81,7 +81,7 @@ class Player2State():
 
     def run_turn(self, piece, move1, move2, era_index):
         self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        # self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
 
