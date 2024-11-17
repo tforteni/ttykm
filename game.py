@@ -65,6 +65,13 @@ class Game:
         board.add_piece(row, column, piece)
 
 
+    
+    def enumerate_possible_moves(self, piece):
+        possible_moves =  []
+        moves_dictionary =  ["n", "s", "e", "w", "b", "f"]
+        
+                
+        
         
 """PLAN
 
