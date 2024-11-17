@@ -69,7 +69,7 @@ class Player1State():
 
     def run_turn(self, piece, move1, move2, era_index):
         self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        # self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player2State(self._cli, self._cli.player2))
 
@@ -81,7 +81,7 @@ class Player2State():
 
     def run_turn(self, piece, move1, move2, era_index):
         self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        # self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
 

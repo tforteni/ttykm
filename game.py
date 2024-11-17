@@ -1,11 +1,13 @@
 from board import Board
+from movestrategy import Move, PushMove
 
 class Game:
     
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, move_strategy=Move()):
         self.player1 = player1
         self.player2 = player2
         self.all_boards = []
+        self._strategy = move_strategy
         
         #initializes Game object with 3 boards
         for x in range(0, 3):
@@ -24,6 +26,11 @@ class Game:
             if board.add_piece(0,0,piece):
                 piece.row = 0
                 piece.column = 0
+                piece.location = index
+            piece = self.player2.get_next_piece()#remove this
+            if board.add_piece(2,3,piece):
+                piece.row = 2
+                piece.column = 3
                 piece.location = index
             
     def show_game(self):
@@ -58,11 +65,17 @@ class Game:
         board_str += "white"            
         print(board_str)
         
-    def move_piece(self, piece, row, column, board_id, game, player, leave_copy=False): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
+    def set_move_strategy(self, move_strategy):
+        self._strategy = move_strategy
+
+    def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
+        print("calling game move piece\n")
         board = self.all_boards[board_id]
-        if not leave_copy:
-            board.remove_piece(piece.row, piece.column)
-        board.add_piece(row, column, piece)
+        if board.occupied(row, column): #could add check for the kind of piece that occupies it
+            game.set_move_strategy(PushMove())
+        else: 
+            game.set_move_strategy(Move())
+        self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
     
     def enumerate_possible_moves(self, piece):
         possible_moves =  []

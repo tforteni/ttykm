@@ -24,9 +24,7 @@ class Board():
         return False
 
     def remove_piece(self, row, column):
-        print(self._grid[row][column])
         self._grid[row][column] = None
-        print(self._grid[row][column])
             
     # I'm using occupied_by instead
     # def space_empty(self, row, column): 

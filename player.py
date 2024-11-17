@@ -1,6 +1,6 @@
 import string
 from piece import Piece
-
+from movestrategy import Move, PushMove
 
 class Player:
     def __init__(self, id):
@@ -40,6 +40,7 @@ class Player:
                 return x
     
     def move_piece(self, piece, direction, row, column, game):
+        print("calling player move piece\n")
         dirs = {
             "n": -1,
             "e": 1,
@@ -47,12 +48,12 @@ class Player:
             "w": -1,
             "f": 1,
             "b": -1}
-        board = self.focus
+        board = piece.location
         if direction in ["n", "s"]:
             row += dirs[direction]
         if direction in ["e", "w"]:
             column += dirs[direction]
-        game.move_piece(piece, row, column, board, game, self)
+        game.move_piece(piece, row, column, board, game, self, direction)
     
 if __name__ == "__main__":
     walter = Player("white")
