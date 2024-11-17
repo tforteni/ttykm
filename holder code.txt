@@ -1,0 +1,78 @@
+    def enumerate_possible_moves(self, piece, player):
+        class AbstractCommand:
+            def execute(self):
+                raise NotImplemented()
+
+        class north(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "n"
+            def execute(self):
+                self.location["column"] = self.location["column"] - 1 
+                
+        class east(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "e"
+            def execute(self):
+                self.location["row"] = self.location["row"] + 1 
+                
+        class south(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "s"
+            def execute(self):
+                self.location["column"] = self.location["column"] + 1 
+        
+        class west(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "w"
+            def execute(self):
+                self.location["row"] = self.location["row"] - 1 
+                
+        class forward(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "f"
+            def execute(self):
+                self.location["board"] = self.location["board"] + 1 
+
+        class backward(AbstractCommand):
+            def __init__(self, location):
+                self.location = location
+                self.symbol = "b"
+            def execute(self):
+                self.location["board"] = self.location["board"] - 1 
+        
+        
+        # location =  {"column" : piece.column, "row" : piece.row, "board" : piece.location}
+        moves_round_one = [north({"column" : piece.column, "row" : piece.row, "board" : piece.location}), 
+                           east({"column" : piece.column, "row" : piece.row, "board" : piece.location}), 
+                           south({"column" : piece.column, "row" : piece.row, "board" : piece.location}), 
+                           west({"column" : piece.column, "row" : piece.row, "board" : piece.location}), 
+                           forward({"column" : piece.column, "row" : piece.row, "board" : piece.location}), 
+                           backward({"column" : piece.column, "row" : piece.row, "board" : piece.location})]
+        valid_moves = []
+        new_locations = []
+
+        
+        for x in moves_round_one:
+            print(x.location)
+            x.execute()
+            print(x.location, '\n')
+            
+            #immediately skips to the next iteration if piece is out of bounds
+            if not (0 <= x.location["column"] < self.all_boards[0]._columns
+                    and 0 <= x.location["row"] < self.all_boards[0]._rows
+                    and 0 <= x.location["board"] < len(self.all_boards)):
+                continue
+            #checks to see if the location where the piece moved is occupied by not none
+            if self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]) != None:
+                #checks to see if the player does not own this piece, if so, continue to next iteration
+                if player.owns_piece(self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]).symbol) == True:
+                    continue
+                
+            new_locations.append(x.location)
+
+        return (valid_moves, new_locations)
