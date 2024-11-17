@@ -95,7 +95,8 @@ class Game:
 
             for y in range(0, len(round2_possible_moves)):
                 final_list.append((round1_possible_moves[x], round2_possible_moves[y]))
-        
+                
+        # if there are no viable second moves, then the solo moves are added as a pair with None
         if len(final_list) == 0:
             for x in range(0, len(round1_possible_moves)):
                 final_list.append((round1_possible_moves[x], None))
@@ -174,7 +175,7 @@ class Game:
             #checks to see if the location where the piece moved is occupied by not none
             if self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]) != None:
                 #checks to see if the player does not own this piece, if so, continue to next iteration
-                if player.owns_piece(self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]).symbol) == True:
+                if player.owns_piece(self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"])) == None:
                     continue
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
                 if board != x.location["board"]:
@@ -188,19 +189,40 @@ from player import Player
 if __name__ == "__main__":
     player1 = Player("white")
     
-    player1._all_pieces[5].row = 1
-    player1._all_pieces[5].column = 0
-    player1._all_pieces[5].location = 2
+    player1._all_pieces[0].row = 1
+    player1._all_pieces[0].column = 0
+    player1._all_pieces[0].location = 1
+        
+    player1._all_pieces[1].row = 1
+    player1._all_pieces[1].column = 0
+    player1._all_pieces[1].location = 1
+    
     
     player1._all_pieces[4].row = 0
     player1._all_pieces[4].column = 1
     player1._all_pieces[4].location = 2
+    
+    
+    player1._all_pieces[5].row = 1
+    player1._all_pieces[5].column = 0
+    player1._all_pieces[5].location = 2
+    
+
     
     player1._all_pieces[6].row = 0
     player1._all_pieces[6].column = 0
     player1._all_pieces[6].location = 2
     player2 = Player("brown")
     game = Game(player1, player2)
+    
+    game.all_boards[2]._grid[1][0] = player1._all_pieces[5]
+    game.all_boards[2]._grid[0][1] = player1._all_pieces[4]
+    game.all_boards[2]._grid[0][0] = player1._all_pieces[6]
+    game.all_boards[1]._grid[1][0] = player1._all_pieces[0]
+    game.all_boards[1]._grid[0][1] = player1._all_pieces[1]
+
+
+    
     test = game.enumerate_possible_moves(player1._all_pieces[6].column,
                                         player1._all_pieces[6].row,
                                         player1._all_pieces[6].location,
@@ -208,24 +230,7 @@ if __name__ == "__main__":
     
     for x in test:
         print(x, '\n')
-    
-                
-            
-            
-            
-        
-        
-
-
-        
-        
-        # #location is [row][column]
-        # information = (piece.row, )        
-        #         moves_dictionary =  ["n", "s", "e", "w", "b", "f"]
-        
-
-        
-                
+    game.show_game()
         
         
 """PLAN
