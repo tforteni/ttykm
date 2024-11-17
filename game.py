@@ -67,7 +67,7 @@ class Game:
     def set_move_strategy(self, move_strategy):
         self._strategy = move_strategy
 
-    def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False): #TO DO:Implement standard move with command/decorators for if we're pushing/paradoxing etc
+    def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
         print("calling game move piece\n")
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
@@ -93,7 +93,8 @@ class Game:
 Isai: Work on enumerating all possible moves
 + Add validation checks to CLI 
 + Look into iterator pattern
-+ Perhaps pick up where Teni left off with move
++ Perhaps pick up where Teni left off with move + Perhaps pick up where Teni left off with move -  I think this would look like having CLI validation where if someone wants to move in a certain direction e.g. 
+'e' we check that in our enumerated moves there exists a move with 'e' as the first thing in the tuple
 
 Teni: Implement standard move
 + Command and decorators
