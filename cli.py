@@ -13,6 +13,8 @@ class CLI:
         self._turns = 1
         self._state = Player1State(self, self.player1)
         self._history = history
+        if self._history == "on":
+            self._save_states = SaveStates()
         self._display = display
 
     def set_state(self, new_state):
@@ -138,6 +140,17 @@ class Player2State():
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
+        
+class SaveStates():
+    def __init__(self):
+        self._history =  []
+
+    def run_turn(self, piece, move1, move2, era_index):
+        if piece != None:
+            self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
+            self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        self.player.focus = era_index
+        self._cli.set_state(Player1State(self._cli, self._cli.player1))
 
 if __name__ == "__main__":
     player1 = "human"
@@ -154,3 +167,4 @@ if __name__ == "__main__":
         if index == 4:
             display = sys.argv[index]
     CLI(player1, player2, history, display).run()
+    

@@ -80,7 +80,7 @@ class Player:
             self.all_move = random.choice(enumerated_moves)
             move1 = str(self.all_move[0])
             print(move1)
-            return move1
+            return move1            
     
     def get_move2(self, move1, enumerated_moves):
         if self.type== "human":
