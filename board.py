@@ -46,7 +46,7 @@ class Board():
         piece.location = -1
 
     def kill_piece(self, row, column, piece):
-        self.remove_piece(row, column)
+        self.remove_piece(row, column, piece)
         piece.alive = False
             
     # I'm using occupied_by instead

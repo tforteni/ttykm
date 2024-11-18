@@ -111,7 +111,6 @@ class Game:
     
     #Assumes the piece is a piece is a valid Piece object
     def enumerate_possible_moves_helper(self, symbol, row, column, board, player, prev_move = ""):
-        print(symbol, row, column, board, player, prev_move)
         class AbstractCommand:
             def execute(self):
                 raise NotImplemented()

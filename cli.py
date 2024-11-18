@@ -7,8 +7,8 @@ class CLI:
 
     def __init__(self):
         self._selected_account = None
-        self.player1 = Player("white")
-        self.player2 = Player("black")
+        self.player1 = Player("white", "random")
+        self.player2 = Player("black", "random")
         self._game = Game(self.player1, self.player2)
         self._turns = 1
         self._state = Player1State(self, self.player1)
@@ -37,8 +37,9 @@ class CLI:
                 move2 = None
             else:
                 while True:
-                    copy = input("Select a copy to move\n")
-                    copy = str(copy)
+                    print("Select a copy to move")
+                    copy = self._state.player.get_piece()
+                    
                     piece = self._state.player.owns_piece(copy)
                     enumerated_moves = []
                     #if piece cannot move, pick another (earlier check guarantees there is at least one piece that can move at least once)
@@ -66,7 +67,8 @@ class CLI:
                 directions = ['n', 'e', 's', 'w', 'f', 'b']
                 print(enumerated_moves)
                 while True:
-                    move1 = input(f"Select the first direction to move {directions}\n")
+                    print("Select the first direction to move ", directions)
+                    move1 = self._state.player.get_move1(enumerated_moves)
                     #ADDED: checks to see if the chosen move is within possible moves
                     if not move1 in directions or all(x[0] != move1 for x in enumerated_moves):
                         print(f"Cannot move {move1}")
@@ -78,7 +80,8 @@ class CLI:
                         move2 = None
                         break
                     
-                    move2 = input(f"Select the second direction to move {directions}\n")
+                    print("Select the second direction to move ", directions)
+                    move2 = self._state.player.get_move2(move1, enumerated_moves)
                     #checks to see if there is one viable move with move1 and move2. If so, move2 is valid
                     if not move2 in directions or not any(x[0] == move1 and x[1] == move2 for x in enumerated_moves):
                         print(f"Cannot move {move2}")
@@ -86,7 +89,8 @@ class CLI:
                         break
             while True:
                 eras = ['past', 'present', 'future']
-                focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
+                print("Select the next era to focus on ['past', 'present', 'future']")
+                focus_era = self._state.player.get_focus(self._state.player.focus)
                 # if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
                 #CHANGE: slight bug in original, if in past, couldn't move to future
                 if focus_era not in eras or focus_era == self._state.player.focus:
@@ -96,6 +100,8 @@ class CLI:
                 else:
                     break
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
+            if copy == None:
+                piece = None
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
 
             self._turns += 1
@@ -112,8 +118,9 @@ class Player1State():
         self.other = cli.player2
 
     def run_turn(self, piece, move1, move2, era_index):
-        self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        if piece != None:
+            self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
+            self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player2State(self._cli, self._cli.player2))
 
@@ -124,8 +131,9 @@ class Player2State():
         self.other = cli.player1
 
     def run_turn(self, piece, move1, move2, era_index):
-        self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-        self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
+        if piece != None:
+            self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
+            self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
 

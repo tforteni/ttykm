@@ -12,12 +12,7 @@ class Move(MoveStrategy):
 
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
-        #ADDED: NOT SURE IF YOU WANT THIS, CURRENT SYSTEM DOESN'T CHECK TO SEE IF A PUSHED PIECE IS OUT OF BOUNDS
-        if (0 <= row <= board._rows and 0 <= column <= board._columns):
-            board.add_piece(row, column, piece, game.all_boards.index(board))
-        else:
-            board.remove_piece(row, column, piece)
-
+        board.add_piece(row, column, piece, game.all_boards.index(board))
 
 class TimeMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
@@ -28,22 +23,28 @@ class TimeMove(MoveStrategy):
         old_board = game.all_boards[game.all_boards.index(board) - dirs[direction]]
         if direction == "b":
             leave_copy = True #if copies are 0 then this isn't allowed
-        if not leave_copy:
-            old_board.remove_piece(piece.row, piece.column, piece)
+        old_info = [piece.row, piece.column]
+        next_piece = player.get_next_piece()
+        old_board.remove_piece(piece.row, piece.column, piece)
+        if leave_copy == True:
+            old_board.add_piece(old_info[0], old_info[1], next_piece, game.all_boards.index(old_board))
         board.add_piece(row, column, piece, game.all_boards.index(board))
 
 class PushMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
+        str(direction)
         print("calling push move\n")
         dirs = {
             "n": -1,
             "e": 1,
             "s": 1,
-            "w": -1}
+            "w": -1,
+            "None" : 0}
         pushed_piece = board.occupied(row, column)
+
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
-        if direction in ["n", "s"] and (pushed_piece.row + dirs[direction] > 3 or pushed_piece.row + dirs[direction]) < 0 or direction in ["e", "w"] and (pushed_piece.column + dirs[direction] > 3 or pushed_piece.column + dirs[direction]) < 0:
+        if ((direction in ["e", "w"] and (pushed_piece.row + dirs[direction] > 3) or pushed_piece.row + dirs[direction] < 0)) or (direction in ["s", "n"] and (pushed_piece.column + dirs[direction] > 3 or pushed_piece.column + dirs[direction] < 0)):
             board.kill_piece(row, column, pushed_piece)
         else:
             board.remove_piece(row, column, piece)
