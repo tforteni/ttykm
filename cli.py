@@ -50,8 +50,6 @@ class CLI:
                     print("undo, redo, or next")
                     copy = input()
                 self._caretaker.remove_branches()
-                self._caretaker.show_history()
-
     
             #Gives a number from 0, 1, and 2. The max number of moves all pieces are able to move.
             #0- all pieces cannot move at all
