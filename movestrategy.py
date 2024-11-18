@@ -9,9 +9,15 @@ class MoveStrategy(ABC):
 class Move(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
         print("calling basic move\n")
+
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
-        board.add_piece(row, column, piece, game.all_boards.index(board))
+        #ADDED: NOT SURE IF YOU WANT THIS, CURRENT SYSTEM DOESN'T CHECK TO SEE IF A PUSHED PIECE IS OUT OF BOUNDS
+        if (0 <= row <= board._rows and 0 <= column <= board._columns):
+            board.add_piece(row, column, piece, game.all_boards.index(board))
+        else:
+            board.remove_piece(row, column, piece)
+
 
 class TimeMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):

@@ -43,19 +43,18 @@ class CLI:
                     enumerated_moves = []
                     #if piece cannot move, pick another (earlier check guarantees there is at least one piece that can move at least once)
 
-                    if self._state.other.owns_piece(copy):
+                    if self._state.other.owns_piece(copy) != None:
                         print("That is not your copy")
                     elif not piece:
                         print("Not a valid copy")
                     elif piece.location != self._state.player.focus:
                         print("Cannot select a copy from an inactive era")
-
                     else:
                         enumerated_moves = self._game.enumerate_possible_moves(piece.symbol,
                                                                                 piece.row,
                                                                                 piece.column,
                                                                                 piece.location,
-                                                                                self._state.player)
+                                                                                self._state.player)                        
                         if len(enumerated_moves) == 0:
                             print("That copy cannot move")
                         #if chosen piece can only move once, then check if there is at least one pieec that can move twice
@@ -65,6 +64,7 @@ class CLI:
                         else:                      
                             break
                 directions = ['n', 'e', 's', 'w', 'f', 'b']
+                print(enumerated_moves)
                 while True:
                     move1 = input(f"Select the first direction to move {directions}\n")
                     #ADDED: checks to see if the chosen move is within possible moves
@@ -72,7 +72,6 @@ class CLI:
                         print(f"Cannot move {move1}")
                     else:
                         break
-                print(enumerated_moves)
                 while True:
                     #essentially, if the first move chosen results in no second move being able to be made
                     if not any(x[0] == move1 and x[1] != None for x in enumerated_moves):
@@ -98,6 +97,7 @@ class CLI:
                     break
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
+
             self._turns += 1
         again = input("Play again?\n")
         if again == "yes":

@@ -52,9 +52,9 @@ class Player:
             "f": 1,
             "b": -1}
         board = piece.location
-        if direction in ["n", "s"]:
-            row += dirs[direction]
         if direction in ["e", "w"]:
+            row += dirs[direction]
+        if direction in ["n", "s"]:
             column += dirs[direction]
         if direction in ["f", "b"]:
             board += dirs[direction]

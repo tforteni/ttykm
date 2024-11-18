@@ -89,7 +89,7 @@ class Game:
         for x in range(0, len(round1_possible_moves)):
             round2 = self.enumerate_possible_moves_helper(symbol,
                                                           round1_locations[x]["row"],
-                                                        round1_locations[x]["column"],
+                                                          round1_locations[x]["column"],
                                                           round1_locations[x]["board"],
                                                           player, round1_possible_moves[x])
             round2_possible_moves = round2[0]            
@@ -111,6 +111,7 @@ class Game:
     
     #Assumes the piece is a piece is a valid Piece object
     def enumerate_possible_moves_helper(self, symbol, row, column, board, player, prev_move = ""):
+        print(symbol, row, column, board, player, prev_move)
         class AbstractCommand:
             def execute(self):
                 raise NotImplemented()
@@ -184,6 +185,7 @@ class Game:
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
                 if board != x.location["board"]:
                     continue                
+                #if player does own the piece and if the symbol in the moves square does not match the symbol of the original piece
                 if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:  
                     continue
                 
@@ -228,7 +230,7 @@ class Game:
                 piece = self.player._all_pieces[self.index]
                 self.index += 1 
                 if piece.alive == True and piece.in_play == True and piece.location == self.player.focus:
-                    possible_moves = self.game.enumerate_possible_moves(piece.symbol, piece.column, piece.row, piece.location, self.player)
+                    possible_moves = self.game.enumerate_possible_moves(piece.symbol, piece.row, piece.column, piece.location, self.player)
                     if len(possible_moves) == 0:
                         return 0
                     if any(x[1] != None for x in possible_moves):

@@ -85,10 +85,10 @@ class Board():
             for y in range(0, self._columns):
                 if y == 0:
                     str += "\n" + "|" 
-                if self._grid[x][y] == None:
+                if self._grid[y][x] == None:
                     str+= " "
                 else:
-                    str+= f"{self._grid[x][y]}"
+                    str+= f"{self._grid[y][x]}"
                 str+= "|"
             if x == self._rows-1:
                 str += '\n' + spacer
