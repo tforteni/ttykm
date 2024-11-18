@@ -307,14 +307,14 @@ class Game:
         for x in range(0, 3):
             new_board = Board(4,4)
             new_all_boards.append(new_board)
-        for x in player1._all_pieces:
+        
+        for x in self.player1._all_pieces:
             if x.row != -1 or x.column != -1 or x.location != -1:
-                new_all_boards[x.location][x.row][x.column]
-                
-        for x in player2._all_pieces:
+                new_all_boards[x.location]._grid[x.row][x.column] = x
+        for x in self.player2._all_pieces:
             if x.row != -1 or x.column != -1 or x.location != -1:
-                new_all_boards[x.location][x.row][x.column]
-        self.all_boards = new_all_boards
+                new_all_boards[x.location]._grid[x.row][x.column] = x
+        return new_all_boards
         
 
 

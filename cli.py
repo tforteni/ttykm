@@ -38,15 +38,19 @@ class CLI:
                     if copy == "undo":
                         self._caretaker.undo()
                         self._game.show_game()
+                        self._caretaker.show_history()
                         print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
 
                     if copy == "redo":
                         self._caretaker.redo()
                         self._game.show_game()
+                        self._caretaker.show_history()
                         print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     print("undo, redo, or next")
                     copy = input()
                 self._caretaker.remove_branches()
+                self._caretaker.show_history()
+
     
             #Gives a number from 0, 1, and 2. The max number of moves all pieces are able to move.
             #0- all pieces cannot move at all
@@ -61,27 +65,27 @@ class CLI:
             else:
                 while True:
                     print("Select a copy to move")
-                    if self._state.player.type == "heuristic":
-                        for piece in self._state.player.copies_in_era(self._state.player.focus):
-                            enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
-                                                                                piece.row,
-                                                                                piece.column,
-                                                                                piece.location,
-                                                                                self._state.player,
-                                                                                self._state.other)
-                            move_triple = []
-                            move_values = []
-                            for move in enumerated_moves[0]:
-                                move_triple.append((move[0], move[1], 0, 1))
-                                move_values.append(enumerated_moves[1])
+                    # if self._state.player.type == "heuristic":
+                    #     for piece in self._state.player.copies_in_era(self._state.player.focus):
+                    #         enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
+                    #                                                             piece.row,
+                    #                                                             piece.column,
+                    #                                                             piece.location,
+                    #                                                             self._state.player,
+                    #                                                             self._state.other)
+                    #         move_triple = []
+                    #         move_values = []
+                    #         for move in enumerated_moves[0]:
+                    #             move_triple.append((move[0], move[1], 0, 1))
+                    #             move_values.append(enumerated_moves[1])
 
-                            print(enumerated_moves[0])
-                            print(enumerated_moves[1])
-                            sys.exit(0)
-                            break
-                        # self._state.player._calculate_values(self._state.other)
-                    break
-                    sys.exit(0)
+                    #         print(enumerated_moves[0])
+                    #         print(enumerated_moves[1])
+                    #         sys.exit(0)
+                    #         break
+                    #     # self._state.player._calculate_values(self._state.other)
+                    # break
+                    # sys.exit(0)
                     copy = self._state.player.get_piece()
                     
                     piece = self._state.player.owns_piece(copy)
@@ -95,7 +99,7 @@ class CLI:
                     elif piece.location != self._state.player.focus:
                         print("Cannot select a copy from an inactive era")
                     else:
-                        enumerated_moves_list = self._game.enumerate_possible_moves(piece.symbol,
+                        enumerated_moves_list = self._game.enumerate_possible_moves(piece, piece.symbol,
                                                                                 piece.row,
                                                                                 piece.column,
                                                                                 piece.location,
@@ -151,11 +155,6 @@ class CLI:
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
             self._turns += 1
             
-            print("OOOOOOOOOOOOOOOOOOOOOOO\n")
-            print(self._game.all_boards)
-            self._game.show_game()
-            print("OOOOOOOOOOOOOOOOOOOOOOO\n")
-            
         again = input("Play again?\n")
         if again == "yes":
             print("restart game")
@@ -166,10 +165,7 @@ class CLI:
         """
         Saves the current state inside a memento.
         """
-        return ConcreteMemento(
-                               copy.deepcopy(self.player1),
-                               copy.deepcopy(self.player2),
-                               copy.deepcopy(self._game), 
+        return ConcreteMemento(copy.deepcopy(self._game), 
                                copy.deepcopy(self._turns),
                                copy.deepcopy(self._state),
                                copy.deepcopy(self._history),    
@@ -179,24 +175,23 @@ class CLI:
         """
         Restores the Originator's state from a memento object.
         """
-        print("restore 1")
-        self.player1 = memento.get_info()[2].player1
-        print("restore 2")
-        self.player2 = memento.get_info()[2].player2
-        print("restore 3")
-        self._game = memento.get_info()[2]
-        self._game.fill_empty_board()
+        self._game = copy.deepcopy(memento.get_info()[0])
 
-        print("restore 4")
-        self._turns = memento.get_info()[3]
-        print("restore 5")
-        self._state = memento.get_info()[4]
-        print("restore 6")
-        self._history = memento.get_info()[5]
-        print("restore 7")
-        self._display = memento.get_info()[6]
+        self.player1 = self._game.player1
+        self.player2 = self._game.player2
+        self._turns = copy.deepcopy(memento.get_info()[1])
 
+        if isinstance(memento.get_info()[2], Player1State):
+            self._state = Player1State(self, self.player1)
+        else:
+            self._state = Player2State(self, self.player2)
+        
+        self._game.all_boards = self._game.fill_empty_board()
+      
+        self._history = copy.deepcopy(memento.get_info()[3])
 
+        self._display = copy.deepcopy(memento.get_info()[4])
+        
 class Player1State():
     def __init__(self, cli, player):
         self._cli = cli
@@ -234,8 +229,8 @@ class Memento(ABC):
         pass
 
 class ConcreteMemento(Memento):
-    def __init__(self, player1, player2, game, turns, state, history, display):
-        self._info = [player1, player2, game, turns, state, history, display]
+    def __init__(self, game, turns, state, history, display):
+        self._info = [game, turns, state, history, display]
 
     def get_info(self):
         """
@@ -282,7 +277,7 @@ class Caretaker():
     def redo(self) -> None:
         if not len(self._mementos):
             return
-        if self._index + 1 >= len(self._mementos):
+        if self._index + 1 == len(self._mementos):
             return
 
         memento = self._mementos[self._index + 1]
@@ -297,16 +292,13 @@ class Caretaker():
             
     def remove_branches(self) -> None:
         if not len(self._mementos):
-            return
-        print(self._index)
-        
+            return       
+        print("SELF INDEX", self._index, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         while self._mementos[self._index] != self._mementos[-1]:
             self._mementos.pop()                   
         
     def show_history(self) -> None:
-        print("Caretaker: Here's the list of mementos:")
-        for memento in self._mementos:
-            print(memento._info[3].show_game(), '\n')
+        print(self._mementos, "     INDEX", self._index, "       LENGTH", len(self._mementos))
 
 
 if __name__ == "__main__":
