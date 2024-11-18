@@ -5,13 +5,15 @@ from player import Player
 class CLI:
     """Display the CLI menu and respond to choices when run."""
 
-    def __init__(self):
+    def __init__(self, player1, player2, history, display):
         self._selected_account = None
-        self.player1 = Player("white", "random")
-        self.player2 = Player("black", "random")
+        self.player1 = Player("white", player1)
+        self.player2 = Player("black", player2)
         self._game = Game(self.player1, self.player2)
         self._turns = 1
         self._state = Player1State(self, self.player1)
+        self._history = history
+        self._display = display
 
     def set_state(self, new_state):
         """Sets the current state(player)."""
@@ -138,4 +140,17 @@ class Player2State():
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
 
 if __name__ == "__main__":
-    CLI().run()
+    player1 = "human"
+    player2 = "human"
+    history = "off"
+    display = "off"
+    for index, arg in enumerate(sys.argv[1:], start=1): #What is these vals are invalid?
+        if index == 1:
+            player1 = sys.argv[index]
+        if index == 2:
+            player2 = sys.argv[index]
+        if index == 3:
+            history = sys.argv[index]
+        if index == 4:
+            display = sys.argv[index]
+    CLI(player1, player2, history, display).run()
