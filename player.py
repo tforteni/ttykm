@@ -61,7 +61,7 @@ class Player:
         return centrality
     
     def move_piece(self, piece, direction, row, column, game):
-        print("calling player move piece\n")
+        # print("calling player move piece\n")
         dirs = {
             "n": -1,
             "e": 1,
@@ -76,6 +76,8 @@ class Player:
             column += dirs[direction]
         if direction in ["f", "b"]:
             board += dirs[direction]
+        # print(piece.row)
+        # print(piece.column)
         game.move_piece(piece, row, column, board, game, self, direction)
            
     def get_piece(self):
@@ -87,8 +89,12 @@ class Player:
             copy = str(random.choice(matching_pieces))
             print(copy)
             return copy
-        # elif self.type== "heuristic":
+        #elif self.type== "heuristic":
         #     self._calculate_values()
+
+    def get_focus_value(self, era):
+        weight = 1
+        return len(self.copies_in_era(era)) * weight
 
     def calculate_values(self, other):
         weights = [3,2,1,1] #this doesn't include focus

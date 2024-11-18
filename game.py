@@ -69,7 +69,7 @@ class Game:
         self._strategy = move_strategy
 
     def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
-        print("calling game move piece")
+        # print("calling game move piece")
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
             game.set_move_strategy(TimeMove())

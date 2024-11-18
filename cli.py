@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import copy
 import sys
+import random
 from game import Game
 from player import Player
 
@@ -56,8 +57,59 @@ class CLI:
             #0- all pieces cannot move at all
             #1- at least one piece can move once
             #2- at least one piece can move twice
-            all_player_pieces = self._game.better_pieces(self._state.player)
-            if not self._state.player.copies_in_era(self._state.player.focus) or all_player_pieces == 0:
+
+            all_player_pieces = self._game.better_pieces(self._state.player) #This doesn't seem to work for heuristics
+
+            eras = ['past', 'present', 'future']
+            if self._state.player.type == "heuristic":
+                heuristic_moves = {}
+                if (self._state.player.focus == 0):
+                    era1 = 1
+                    era2 = None
+                elif (self._state.player.focus == 1):
+                    era1 = 0
+                    era2 = 2
+                elif (self._state.player.focus == 2):
+                    era1 = 1
+                    era2 = None
+                for piece in self._state.player.copies_in_era(self._state.player.focus):
+                    enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
+                                                                        piece.row,
+                                                                        piece.column,
+                                                                        piece.location,
+                                                                        self._state.player,
+                                                                        self._state.other)
+                    for index, move in enumerate(enumerated_moves[0]):
+                        new_val = self._state.player.get_focus_value(era1) + enumerated_moves[1][index]
+                        heuristic_moves[(piece, move[0], move[1], era1)] = new_val
+                        if era2:
+                            new_val = self._state.player.get_focus_value(era2) + enumerated_moves[1][index]
+                            heuristic_moves[(piece, move[0], move[1], era2)] = new_val
+
+                    # print(piece)
+                    # print(enumerated_moves[0])
+                    # print(enumerated_moves[1])
+                # print(heuristic_moves)
+
+                if len(heuristic_moves) == 0:
+                    copy = None
+                    move1 = None
+                    move2 = None
+                    if self._state.player.get_focus_value(era1) > self._state.player.get_focus_value(era2):
+                        focus_era = eras[era1]
+                else: 
+                    max_value = max(heuristic_moves.values())
+                    options = {key for key, value in heuristic_moves.items() if value == max_value}
+                    move = random.choice(list(options))
+                    # Print the result
+                    print(move)
+                    copy = move[0]
+                    move1 = move[1]
+                    move2 = move[2]
+                    focus_era = eras[move[3]]
+                    # sys.exit(0)
+                    # break
+            elif not self._state.player.copies_in_era(self._state.player.focus) or all_player_pieces == 0:
                 print("No copies to move")
                 copy = None
                 move1 = None
@@ -137,18 +189,18 @@ class CLI:
                         print(f"Cannot move {move2}")
                     else:
                         break
-            while True:
-                eras = ['past', 'present', 'future']
-                print("Select the next era to focus on ['past', 'present', 'future']")
-                focus_era = self._state.player.get_focus(self._state.player.focus)
-                # if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
-                #CHANGE: slight bug in original, if in past, couldn't move to future
-                if focus_era not in eras or focus_era == self._state.player.focus:
-                    print("Not a valid era")
-                elif eras.index(focus_era) == self._state.player.focus:
-                    print("Cannot select the current era")
-                else:
-                    break
+            if self._state.player.type != "heuristic":
+                while True:
+                    print("Select the next era to focus on ['past', 'present', 'future']")
+                    focus_era = self._state.player.get_focus(self._state.player.focus)
+                    # if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
+                    #CHANGE: slight bug in original, if in past, couldn't move to future
+                    if focus_era not in eras or focus_era == self._state.player.focus:
+                        print("Not a valid era")
+                    elif eras.index(focus_era) == self._state.player.focus:
+                        print("Cannot select the current era")
+                    else:
+                        break
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             if copy == None:
                 piece = None
@@ -213,6 +265,8 @@ class Player2State():
 
     def run_turn(self, piece, move1, move2, era_index):
         if piece != None:
+            # print(piece.row)
+            # print(piece.column)
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index

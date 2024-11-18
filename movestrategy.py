@@ -9,7 +9,6 @@ class MoveStrategy(ABC):
 class Move(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
         # print("calling basic move")
-
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         board.add_piece(row, column, piece, game.all_boards.index(board))
