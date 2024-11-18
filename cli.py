@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+import copy
 import sys
 from game import Game
 from player import Player
@@ -6,16 +8,15 @@ class CLI:
     """Display the CLI menu and respond to choices when run."""
 
     def __init__(self, player1, player2, history, display):
-        self._selected_account = None
         self.player1 = Player("white", player1)
         self.player2 = Player("black", player2)
         self._game = Game(self.player1, self.player2)
         self._turns = 1
         self._state = Player1State(self, self.player1)
         self._history = history
-        if self._history == "on":
-            self._save_states = SaveStates()
         self._display = display
+        self._caretaker = Caretaker(self)
+
 
     def set_state(self, new_state):
         """Sets the current state(player)."""
@@ -24,11 +25,29 @@ class CLI:
     def run(self):
         """Display the game and menu and respond to choices."""
         self._game.build_game()
-        while not self._game.is_over(self._state.player, self._state.other):
+        while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
+            self._caretaker.backup()
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
             
+            if self.player1.type == "human" or self.player2.type == "human":
+                print("undo, redo, or next")
+                copy = input()
+                while copy != "next":
+                    if copy == "undo":
+                        self._caretaker.undo()
+                        self._game.show_game()
+                        print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+
+                    if copy == "redo":
+                        self._caretaker.redo()
+                        self._game.show_game()
+                        print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+                    print("undo, redo, or next")
+                    copy = input()
+                self._caretaker.remove_branches()
+    
             #Gives a number from 0, 1, and 2. The max number of moves all pieces are able to move.
             #0- all pieces cannot move at all
             #1- at least one piece can move once
@@ -130,13 +149,53 @@ class CLI:
             if copy == None:
                 piece = None
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
-
             self._turns += 1
+            
+            print("OOOOOOOOOOOOOOOOOOOOOOO\n")
+            print(self._game.all_boards)
+            self._game.show_game()
+            print("OOOOOOOOOOOOOOOOOOOOOOO\n")
+            
         again = input("Play again?\n")
         if again == "yes":
             print("restart game")
         else:
             sys.exit(0)
+
+    def save(self):
+        """
+        Saves the current state inside a memento.
+        """
+        return ConcreteMemento(
+                               copy.deepcopy(self.player1),
+                               copy.deepcopy(self.player2),
+                               copy.deepcopy(self._game), 
+                               copy.deepcopy(self._turns),
+                               copy.deepcopy(self._state),
+                               copy.deepcopy(self._history),    
+                               copy.deepcopy(self._display))
+
+    def restore(self, memento):
+        """
+        Restores the Originator's state from a memento object.
+        """
+        print("restore 1")
+        self.player1 = memento.get_info()[2].player1
+        print("restore 2")
+        self.player2 = memento.get_info()[2].player2
+        print("restore 3")
+        self._game = memento.get_info()[2]
+        self._game.fill_empty_board()
+
+        print("restore 4")
+        self._turns = memento.get_info()[3]
+        print("restore 5")
+        self._state = memento.get_info()[4]
+        print("restore 6")
+        self._history = memento.get_info()[5]
+        print("restore 7")
+        self._display = memento.get_info()[6]
+
 
 class Player1State():
     def __init__(self, cli, player):
@@ -164,16 +223,91 @@ class Player2State():
         self.player.focus = era_index
         self._cli.set_state(Player1State(self._cli, self._cli.player1))
         
-class SaveStates():
-    def __init__(self):
-        self._history =  []
+class Memento(ABC):
+    """
+    The Memento interface provides a way to retrieve the memento's metadata,
+    such as creation date or name. However, it doesn't expose the Originator's
+    state.
+    """
+    @abstractmethod
+    def get_info(self) -> str:
+        pass
 
-    def run_turn(self, piece, move1, move2, era_index):
-        if piece != None:
-            self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
-            self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
-        self.player.focus = era_index
-        self._cli.set_state(Player1State(self._cli, self._cli.player1))
+class ConcreteMemento(Memento):
+    def __init__(self, player1, player2, game, turns, state, history, display):
+        self._info = [player1, player2, game, turns, state, history, display]
+
+    def get_info(self):
+        """
+        The Originator uses this method when restoring its state.
+        """
+        return self._info
+
+class Caretaker():
+    """
+    The Caretaker doesn't depend on the Concrete Memento class. Therefore, it
+    doesn't have access to the originator's state, stored inside the memento. It
+    works with all mementos via the base Memento interface.
+    """
+
+    def __init__(self, cli) -> None:
+        self._mementos = []
+        self._cli = cli
+        self._index = -1
+
+    def backup(self) -> None:
+        print("\nCaretaker: Saving Originator's state...")
+        self._mementos.append(self._cli.save())
+        self._index += 1
+
+    def undo(self) -> None:
+        print("stage A")
+        if not len(self._mementos):
+            return
+        print("stage A2")
+        print
+        if self._index - 1 < 0:
+            return
+        print("stage B")
+        memento = self._mementos[self._index - 1]
+        self._index += -1
+        print("stage B2")
+        try:
+            print("stage C")
+            self._cli.restore(memento)
+        except Exception:
+            print("stage C2")
+            self.undo()
+    
+    def redo(self) -> None:
+        if not len(self._mementos):
+            return
+        if self._index + 1 >= len(self._mementos):
+            return
+
+        memento = self._mementos[self._index + 1]
+        self._index += 1
+
+        try:
+            print("stage D1")
+            self._cli.restore(memento)
+        except Exception:
+            print("stage D2")
+            self.redo()
+            
+    def remove_branches(self) -> None:
+        if not len(self._mementos):
+            return
+        print(self._index)
+        
+        while self._mementos[self._index] != self._mementos[-1]:
+            self._mementos.pop()                   
+        
+    def show_history(self) -> None:
+        print("Caretaker: Here's the list of mementos:")
+        for memento in self._mementos:
+            print(memento._info[3].show_game(), '\n')
+
 
 if __name__ == "__main__":
     player1 = "human"

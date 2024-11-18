@@ -36,7 +36,7 @@ class Player:
         for piece in self._all_pieces:
             if symbol == piece.symbol:
                 return piece
-        return None
+        return None        
 
     def get_next_piece(self):
         #Returns next valid piece
@@ -77,7 +77,7 @@ class Player:
         if direction in ["f", "b"]:
             board += dirs[direction]
         game.move_piece(piece, row, column, board, game, self, direction)
-    
+           
     def get_piece(self):
         if self.type== "human":
             copy = input()

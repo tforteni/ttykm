@@ -301,7 +301,20 @@ class Game:
         for x in iterate_pieces:
             prelist.append(x)
         return max(prelist)
-        
+    
+    def fill_empty_board(self):
+        new_all_boards = []
+        for x in range(0, 3):
+            new_board = Board(4,4)
+            new_all_boards.append(new_board)
+        for x in player1._all_pieces:
+            if x.row != -1 or x.column != -1 or x.location != -1:
+                new_all_boards[x.location][x.row][x.column]
+                
+        for x in player2._all_pieces:
+            if x.row != -1 or x.column != -1 or x.location != -1:
+                new_all_boards[x.location][x.row][x.column]
+        self.all_boards = new_all_boards
         
 
 
