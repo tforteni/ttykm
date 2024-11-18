@@ -72,6 +72,7 @@ class CLI:
                         print(f"Cannot move {move1}")
                     else:
                         break
+                print(enumerated_moves)
                 while True:
                     #essentially, if the first move chosen results in no second move being able to be made
                     if not any(x[0] == move1 and x[1] != None for x in enumerated_moves):
@@ -80,14 +81,16 @@ class CLI:
                     
                     move2 = input(f"Select the second direction to move {directions}\n")
                     #checks to see if there is one viable move with move1 and move2. If so, move2 is valid
-                    if not move2 in directions and not any(x[0] == move1 and x[1] == move2 for x in enumerated_moves):
+                    if not move2 in directions or not any(x[0] == move1 and x[1] == move2 for x in enumerated_moves):
                         print(f"Cannot move {move2}")
                     else:
                         break
             while True:
                 eras = ['past', 'present', 'future']
                 focus_era = input("Select the next era to focus on ['past', 'present', 'future']\n")
-                if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
+                # if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
+                #CHANGE: slight bug in original, if in past, couldn't move to future
+                if focus_era not in eras or focus_era == self._state.player.focus:
                     print("Not a valid era")
                 elif eras.index(focus_era) == self._state.player.focus:
                     print("Cannot select the current era")
