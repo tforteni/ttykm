@@ -24,7 +24,7 @@ class CLI:
     def run(self):
         """Display the game and menu and respond to choices."""
         self._game.build_game()
-        while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
+        while not self._game.is_over(self._state.player, self._state.other):
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
@@ -42,6 +42,27 @@ class CLI:
             else:
                 while True:
                     print("Select a copy to move")
+                    if self._state.player.type == "heuristic":
+                        for piece in self._state.player.copies_in_era(self._state.player.focus):
+                            enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
+                                                                                piece.row,
+                                                                                piece.column,
+                                                                                piece.location,
+                                                                                self._state.player,
+                                                                                self._state.other)
+                            move_triple = []
+                            move_values = []
+                            for move in enumerated_moves[0]:
+                                move_triple.append((move[0], move[1], 0, 1))
+                                move_values.append(enumerated_moves[1])
+
+                            print(enumerated_moves[0])
+                            print(enumerated_moves[1])
+                            sys.exit(0)
+                            break
+                        # self._state.player._calculate_values(self._state.other)
+                    break
+                    sys.exit(0)
                     copy = self._state.player.get_piece()
                     
                     piece = self._state.player.owns_piece(copy)
@@ -55,11 +76,13 @@ class CLI:
                     elif piece.location != self._state.player.focus:
                         print("Cannot select a copy from an inactive era")
                     else:
-                        enumerated_moves = self._game.enumerate_possible_moves(piece.symbol,
+                        enumerated_moves_list = self._game.enumerate_possible_moves(piece.symbol,
                                                                                 piece.row,
                                                                                 piece.column,
                                                                                 piece.location,
-                                                                                self._state.player)                        
+                                                                                self._state.player,
+                                                                                self._state.other)      
+                        enumerated_moves = enumerated_moves_list[0]                   
                         if len(enumerated_moves) == 0:
                             print("That copy cannot move")
                         #if chosen piece can only move once, then check if there is at least one pieec that can move twice

@@ -43,6 +43,22 @@ class Player:
         for x in self._all_pieces:
             if x.in_play == False and x.alive == True:
                 return x
+
+    def _supply(self):
+        supply = []
+        for x in self._all_pieces:
+            if x.in_play == False and x.alive == True:
+                supply.append(x)
+        return supply
+    
+    def _calculate_centrality(self):
+        centrality = 0
+        for x in self._all_pieces:
+            if x.in_play == True and x.alive == True:
+                if x.row > 0 and x.row < 3 and x.column > 0 and x.column < 3:
+                    centrality += 1
+                # print(f"HERE: {x.row, x.column}")
+        return centrality
     
     def move_piece(self, piece, direction, row, column, game):
         print("calling player move piece\n")
@@ -71,6 +87,37 @@ class Player:
             copy = str(random.choice(matching_pieces))
             print(copy)
             return copy
+        # elif self.type== "heuristic":
+        #     self._calculate_values()
+
+    def calculate_values(self, other):
+        weights = [3,2,1,1] #this doesn't include focus
+        era_prescence = 0
+        piece_advantage = 0
+        for i in range(0,3):
+            if self.copies_in_era(i):
+                era_prescence += 1
+                piece_advantage += len(self.copies_in_era(i))
+        for i in range(0,3):
+            if other.copies_in_era(i):
+                piece_advantage -= len(self.copies_in_era(i))
+        supply = len(self._supply())
+        # print(f"HERE IS ALL: {self._all_pieces[0].row}")
+        centrality = self._calculate_centrality()
+        # focus = len(self.copies_in_era(self.focus)) #this needs to be integrated after a user has selected an era!!!!!!#############
+        criteria = [era_prescence, piece_advantage, supply, centrality]#, focus]
+        value = 0
+        for i in range(0,4):
+            # value += weights[i] * criteria[i]
+            value += criteria[i]
+        # print(f"era prescence = {era_prescence}")
+        # print(f"piece advantage = {piece_advantage}")
+        # print(f"supply = {supply}")
+        # print(f"centrality = {centrality}")
+        # print(f"focus = {focus}")
+        # print(f"value = {value}") 
+        return value
+
     
     def get_move1(self, enumerated_moves):
         if self.type== "human":
