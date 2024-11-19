@@ -83,9 +83,9 @@ class CLI:
                         move1 = str(self.all_move[0])
                         move2 = str(self.all_move[1])
                 
-                dict = {0: "past", 1: "present", 2: "future"}
-                list = ["past", "present", "future"]
-                list.remove(dict[self._state.player.focus])
+                eras_dict = {0: "past", 1: "present", 2: "future"}
+                eras_list = ["past", "present", "future"]
+                eras_list.remove(eras_dict[self._state.player.focus])
                 
                 focus_era = random.choice(eras_list)
 
