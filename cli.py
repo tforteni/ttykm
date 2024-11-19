@@ -27,12 +27,12 @@ class CLI:
         """Display the game and menu and respond to choices."""
         self._game.build_game()
         while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
-            self._caretaker.backup()
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
             
             if (self.player1.type == "human" or self.player2.type == "human") and self._display == "on":
+                self._caretaker.backup()
                 print("undo, redo, or next")
                 copy = input()
                 while copy != "next":
@@ -59,22 +59,28 @@ class CLI:
             eras = ['past', 'present', 'future']
             if self._state.player.type == "random":
                 matching_pieces = [x for x in self._state.player._all_pieces if x.location == self._state.player.focus and x.alive == True and x.in_play == True]
-                piece = random.choice(matching_pieces)
-                copy = piece.symbol
-                
-                enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
-                                                    piece.row,
-                                                    piece.column,
-                                                    piece.location,
-                                                    self._state.player,
-                                                    self._state.other)
-                if len(enumerated_moves[0]) == 0:
+                if len(matching_pieces) == 0:
+                    piece = None
+                    copy = None
                     move1 = None
                     move2 = None
                 else:
-                    self.all_move = random.choice(enumerated_moves[0])
-                    move1 = str(self.all_move[0])
-                    move2 = str(self.all_move[1])
+                    piece = random.choice(matching_pieces)
+                    copy = piece.symbol
+                
+                    enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
+                                                        piece.row,
+                                                        piece.column,
+                                                        piece.location,
+                                                        self._state.player,
+                                                        self._state.other)
+                    if len(enumerated_moves[0]) == 0:
+                        move1 = None
+                        move2 = None
+                    else:
+                        self.all_move = random.choice(enumerated_moves[0])
+                        move1 = str(self.all_move[0])
+                        move2 = str(self.all_move[1])
                 
                 dict = {0: "past", 1: "present", 2: "future"}
                 list = ["past", "present", "future"]
@@ -341,12 +347,9 @@ class Caretaker():
         print("stage B")
         memento = self._mementos[self._index - 1]
         self._index += -1
-        print("stage B2")
         try:
-            print("stage C")
             self._cli.restore(memento)
         except Exception:
-            print("stage C2")
             self.undo()
     
     def redo(self) -> None:
@@ -359,10 +362,8 @@ class Caretaker():
         self._index += 1
 
         try:
-            print("stage D1")
             self._cli.restore(memento)
         except Exception:
-            print("stage D2")
             self.redo()
             
     def remove_branches(self) -> None:
