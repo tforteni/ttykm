@@ -40,7 +40,8 @@ class PushMove(MoveStrategy):
             "w": -1,
             "None" : 0}
         pushed_piece = board.occupied(row, column)
-
+        if direction == None:
+            return
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         if ((direction in ["e", "w"] and (pushed_piece.row + dirs[direction] > 3) or pushed_piece.row + dirs[direction] < 0)) or (direction in ["s", "n"] and (pushed_piece.column + dirs[direction] > 3 or pushed_piece.column + dirs[direction] < 0)):

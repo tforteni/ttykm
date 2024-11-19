@@ -290,7 +290,7 @@ class Game:
                     possible_moves = self.game.enumerate_possible_moves(piece, piece.symbol, piece.row, piece.column, piece.location, self.player, other)
                     if len(possible_moves) == 0:
                         return 0
-                    if any(x[1] != None for x in possible_moves):
+                    if any(len(x) > 1 and x[1] != None for x in possible_moves):
                         return 2
                     else:
                         return 1                        

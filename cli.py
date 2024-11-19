@@ -75,7 +75,7 @@ class CLI:
                                                         piece.location,
                                                         self._state.player,
                                                         self._state.other)
-                    if len(enumerated_moves[0]) == 0:
+                    if len(enumerated_moves) == 0 or len(enumerated_moves[0]) == 0:
                         move1 = None
                         move2 = None
                     else:
@@ -211,6 +211,7 @@ class CLI:
             self._turns += 1
             
         again = input("Play again?\n")
+        
         if again == "yes":
             print("restart game")
         else:
@@ -343,7 +344,6 @@ class Caretaker():
     def remove_branches(self) -> None:
         if not len(self._mementos):
             return       
-        print("SELF INDEX", self._index, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         while self._mementos[self._index] != self._mementos[-1]:
             self._mementos.pop()                   
 
@@ -361,5 +361,6 @@ if __name__ == "__main__":
             history = sys.argv[index]
         if index == 4:
             display = sys.argv[index]
-    CLI(player1, player2, history, display).run()
+        while 1 == 1:
+            CLI(player1, player2, history, display).run()
     
