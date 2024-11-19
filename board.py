@@ -54,6 +54,7 @@ class Board():
     #     return self._grid[row][column] == None
 
     def occupied(self, row, column):
+        # print(f"{row}, {column}")
         return self._grid[row][column]
     
     def swap_two_spaces(self, row1, column1, row2, column2):

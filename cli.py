@@ -27,6 +27,7 @@ class CLI:
         """Display the game and menu and respond to choices."""
         self._game.build_game()
         while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
+            # self._caretaker.backup()
             self._game.show_game()
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
@@ -86,7 +87,7 @@ class CLI:
                 list = ["past", "present", "future"]
                 list.remove(dict[self._state.player.focus])
                 
-                focus_era = random.choice(list)
+                focus_era = random.choice(eras_list)
 
             elif self._state.player.type == "heuristic":
                 heuristic_moves = {}
@@ -113,9 +114,9 @@ class CLI:
                             new_val = self._state.player.get_focus_value(era2) + enumerated_moves[1][index]
                             heuristic_moves[(piece, move[0], move[1], era2)] = new_val
 
-                    # print(piece)
-                    # print(enumerated_moves[0])
-                    # print(enumerated_moves[1])
+                # print(f"{piece.symbol}, {piece.row}, {piece.column}")
+                # print(enumerated_moves[0])
+                # print(enumerated_moves[1])
                 # print(heuristic_moves)
 
                 if len(heuristic_moves) == 0:
@@ -127,10 +128,13 @@ class CLI:
                 else: 
                     max_value = max(heuristic_moves.values())
                     options = {key for key, value in heuristic_moves.items() if value == max_value}
+                    print(options)
                     move = random.choice(list(options))
                     # Print the result
-                    print(move)
+                    # print(move)
                     copy = move[0]
+                    piece = self._state.player.owns_piece(str(copy))
+                    # print(piece)
                     move1 = move[1]
                     move2 = move[2]
                     focus_era = eras[move[3]]
@@ -144,29 +148,7 @@ class CLI:
             else:
                 while True:
                     print("Select a copy to move")
-                    # if self._state.player.type == "heuristic":
-                    #     for piece in self._state.player.copies_in_era(self._state.player.focus):
-                    #         enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
-                    #                                                             piece.row,
-                    #                                                             piece.column,
-                    #                                                             piece.location,
-                    #                                                             self._state.player,
-                    #                                                             self._state.other)
-                    #         move_triple = []
-                    #         move_values = []
-                    #         for move in enumerated_moves[0]:
-                    #             move_triple.append((move[0], move[1], 0, 1))
-                    #             move_values.append(enumerated_moves[1])
-
-                    #         print(enumerated_moves[0])
-                    #         print(enumerated_moves[1])
-                    #         sys.exit(0)
-                    #         break
-                    #     # self._state.player._calculate_values(self._state.other)
-                    # break
-                    # sys.exit(0)
                     copy = self._state.player.get_piece()
-                    
                     piece = self._state.player.owns_piece(copy)
                     enumerated_moves = []
                     #if piece cannot move, pick another (earlier check guarantees there is at least one piece that can move at least once)
@@ -230,6 +212,7 @@ class CLI:
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             if copy == None:
                 piece = None
+            # print(copy)
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
             self._turns += 1
             
@@ -291,8 +274,6 @@ class Player2State():
 
     def run_turn(self, piece, move1, move2, era_index):
         if piece != None:
-            # print(piece.row)
-            # print(piece.column)
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index

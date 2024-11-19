@@ -15,12 +15,12 @@ class Game:
             new_board = Board(4,4)
             self.all_boards.append(new_board)
 
-    def is_over(self, player, other):
+    def is_over(self, player, other, print_it=True):
         eras = [0,0,0]
         eras[0] = len(player.copies_in_era(0))
         eras[1] = len(player.copies_in_era(1))
         eras[2] = len(player.copies_in_era(2))
-        if eras.count(0) >= 2:
+        if eras.count(0) >= 2 and print_it:
             print(f"{other.id} has won")
             return True
         return False
@@ -106,13 +106,22 @@ class Game:
                 piece_copy = copy.deepcopy(this_piece)
                 player_copy = copy.deepcopy(player)
                 player_copy._all_pieces[player._all_pieces.index(this_piece)] = piece_copy
-                # print(round1_locations[x]["row"], round1_locations[x]["column"])
-                # print(round2_locations[y]["row"], round2_locations[y]["column"])
-                # print(old_game.all_boards[0])
                 val1 = old_game.move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player_copy, round1_possible_moves[x])
+                game_over = 0
+                if (player_copy == old_game.player1):
+                    if old_game.is_over(player_copy, old_game.player2, False):
+                        game_over = 9999
+                elif old_game.is_over(player_copy, old_game.player1, False):
+                    game_over = 9999
                 val2 = old_game.move_piece_copy(piece_copy, round2_locations[y]["row"], round2_locations[y]["column"], round2_locations[y]["board"], self, player_copy, round2_possible_moves[y])
+                game_over2 = 0
+                if (player_copy == old_game.player1):
+                    if old_game.is_over(player_copy, old_game.player2, False):
+                        game_over2 = 9999
+                elif old_game.is_over(player_copy, old_game.player1, False):
+                    game_over2 = 9999
                 # print(old_game.all_boards[0])
-                final_move_values.append(val1 + val2)
+                final_move_values.append(val1 + val2 + game_over + game_over2)
             if len(round2_possible_moves) == 0:
                 final_list.append((round1_possible_moves[x], None))
                 old_game = copy.deepcopy(self)
