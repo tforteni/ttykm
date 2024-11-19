@@ -5,32 +5,32 @@ class Board():
     def __init__(self, rows = 4, columns = 4):
         # class Grid():
         #     def __init__(self, rows, columns):
-        #         self._grid = []
+        #         self.grid = []
         #         for x in range(0, rows):
-        #             self._grid.append([])
+        #             self.grid.append([])
         #             for y in range(0, columns):
-        #                 self._grid[x].append(None)
+        #                 self.grid[x].append(None)
                         
         #     def __getitem__(self, row):
-        #         return self._grid[row]
+        #         return self.grid[row]
 
         #     def __setitem__(self, row, column, value):
         #         print ("A")
                 
         self._rows = rows
         self._columns = columns 
-        self._grid = []
+        self.grid = []
             
         #Initialise grid to contain None in every space
         for x in range(0, self._columns):
             to_add = []
             for y in range(0, self._rows):
                 to_add.append(None)
-            self._grid.append(to_add)
+            self.grid.append(to_add)
             
     def add_piece(self, row, column, piece, board_id):
         if not self.occupied(row, column):
-            self._grid[row][column] = piece
+            self.grid[row][column] = piece
             piece.row = row            
             piece.column = column
             piece.in_play = True
@@ -39,7 +39,7 @@ class Board():
         return False
 
     def remove_piece(self, row, column, piece):
-        self._grid[row][column] = None
+        self.grid[row][column] = None
         piece.in_play = False
         piece.row = -1
         piece.column = -1
@@ -51,16 +51,16 @@ class Board():
 
     def occupied(self, row, column):
         # print(f"{row}, {column}")
-        return self._grid[row][column]
+        return self.grid[row][column]
     
     def swap_two_spaces(self, row1, column1, row2, column2):
-        holder = self._grid[row1][column1]
-        self._grid[row1][column1] = self._grid[row2][column2]
-        self._grid[row2][column2] = holder
+        holder = self.grid[row1][column1]
+        self.grid[row1][column1] = self.grid[row2][column2]
+        self.grid[row2][column2] = holder
     
     def replace_space_with_another(self, row1, column1, row2, column2):
-        self._grid[row2][column2] = self._grid[row1][column1]
-        self._grid[row1][column1] = None
+        self.grid[row2][column2] = self.grid[row1][column1]
+        self.grid[row1][column1] = None
 
     def __repr__(self):
         str = ""
@@ -82,17 +82,11 @@ class Board():
             for y in range(0, self._columns):
                 if y == 0:
                     str += "\n" + "|" 
-                if self._grid[y][x] == None:
+                if self.grid[y][x] == None:
                     str+= " "
                 else:
-                    str+= f"{self._grid[y][x]}"
+                    str+= f"{self.grid[y][x]}"
                 str+= "|"
             if x == self._rows-1:
                 str += '\n' + spacer
         return str
-    
-    
-# if __name__ == "__main__":
-#     board = Board(4, 4)
-#     board._grid[0][1] = "A"
-#     print(board)

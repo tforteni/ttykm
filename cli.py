@@ -72,7 +72,7 @@ class CLI:
 
             eras = ['past', 'present', 'future']
             if self._state.player.type == "random":
-                matching_pieces = [x for x in self._state.player._all_pieces if x.location == self._state.player.focus and x.alive == True and x.in_play == True]
+                matching_pieces = [x for x in self._state.player.all_pieces if x.location == self._state.player.focus and x.alive == True and x.in_play == True]
                 if len(matching_pieces) == 0:
                     piece = None
                     copy = None

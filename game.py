@@ -84,7 +84,7 @@ class Game:
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
     
     def enumerate_possible_moves(self, this_piece, symbol, row, column, board, player, other):
-        # print(f"HERE IS ALL: {self.player1._all_pieces}")
+        # print(f"HERE IS ALL: {self.player1.all_pieces}")
         round1 = self.enumerate_possible_moves_helper(this_piece, symbol, row, column, board, player, other)
         round1_possible_moves = round1[0]
         round1_locations = round1[1]
@@ -109,7 +109,7 @@ class Game:
                 old_game = copy.deepcopy(self)
                 piece_copy = copy.deepcopy(this_piece)
                 player_copy = copy.deepcopy(player)
-                player_copy._all_pieces[player._all_pieces.index(this_piece)] = piece_copy
+                player_copy.all_pieces[player.all_pieces.index(this_piece)] = piece_copy
                 val1 = old_game.move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player_copy, round1_possible_moves[x])
                 game_over = 0
                 if (player_copy == old_game.player1):
@@ -213,23 +213,27 @@ class Game:
                     and 0 <= x.location["board"] < len(self.all_boards)):
                 continue
             
+            if prev_move == "b" and x.symbol == "f":
+                continue
             #checks to see if the location where the piece moved is occupied by not none
             if self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"]) != None:
                 chosen_piece = self.all_boards[x.location["board"]].occupied(x.location["row"], x.location["column"])
                 #checks to see if the player does not own this piece, if so, continue to next iteration
                 
                 # if the piece has jumped boards and that space is not None, then it is not a viable move
-                if board != x.location["board"]:
-                    continue                
+                # 2nd and 3rd checks are in the case of a forward backward jump
+
+                if board != x.location["board"] and prev_move != "f" and x.symbol != "b":
+                    continue
                 #if player does own the piece and if the symbol in the moves square does not match the symbol of the original piece
                 if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:
-                    if not any(y.row == row and y.column == column and y.location == board for y in other._all_pieces) and x.symbol != prev_move:
+                    if not any(y.row == row and y.column == column and y.location == board for y in other.all_pieces) and x.symbol != prev_move:
                         continue
                 
             # checks to see if the player does not have any pieces in the case of a movement to the past
             if board == x.location["board"] + 1:
                 extras = 0
-                for piece in player._all_pieces:    
+                for piece in player.all_pieces:    
                     if piece.alive == True and piece.in_play == False:
                         extras += 1
                 if prev_move == "b":
@@ -276,10 +280,10 @@ class Game:
                 self.index = 0
 
             def __next__(self):
-                if self.index == len(self.player._all_pieces):
+                if self.index == len(self.player.all_pieces):
                     raise StopIteration()
 
-                piece = self.player._all_pieces[self.index]
+                piece = self.player.all_pieces[self.index]
                 if self.player == self.game.player1:
                     other = self.game.player2
                 else:
@@ -311,102 +315,10 @@ class Game:
             new_board = Board(4,4)
             new_all_boards.append(new_board)
         
-        for x in self.player1._all_pieces:
+        for x in self.player1.all_pieces:
             if x.row != -1 or x.column != -1 or x.location != -1:
-                new_all_boards[x.location]._grid[x.row][x.column] = x
-        for x in self.player2._all_pieces:
+                new_all_boards[x.location].grid[x.row][x.column] = x
+        for x in self.player2.all_pieces:
             if x.row != -1 or x.column != -1 or x.location != -1:
-                new_all_boards[x.location]._grid[x.row][x.column] = x
+                new_all_boards[x.location].grid[x.row][x.column] = x
         return new_all_boards
-        
-
-
-from player import Player    
-if __name__ == "__main__":
-    player1 = Player("white")
-    player2 = Player("brown")
-    game = Game(player1, player2)
-    
-    player1.focus= 2
-    
-    player1._all_pieces[0].alive = False
-    player1._all_pieces[0].in_play = False
-        
-    player1._all_pieces[1].alive = True
-    player1._all_pieces[1].in_play = False
-    
-    player1._all_pieces[2].row = 1
-    player1._all_pieces[2].column = 0
-    player1._all_pieces[2].location = 1
-    player1._all_pieces[2].alive = True
-    player1._all_pieces[2].in_play = True
-    
-    player1._all_pieces[3].row = 0
-    player1._all_pieces[3].column = 1
-    player1._all_pieces[3].location = 1
-    player1._all_pieces[3].alive = True
-    player1._all_pieces[3].in_play = True
-    
-    player1._all_pieces[4].row = 0
-    player1._all_pieces[4].column = 1
-    player1._all_pieces[4].location = 1
-    player1._all_pieces[4].alive = True
-    player1._all_pieces[4].in_play = True
-        
-    # player1._all_pieces[5].row = 1
-    # player1._all_pieces[5].column = 0
-    # player1._all_pieces[5].location = 2
-    # player1._all_pieces[5].alive = True
-    # player1._all_pieces[5].in_play = True
-    player1._all_pieces[5].alive = False
-    player1._all_pieces[5].in_play = False
-
-    player1._all_pieces[6].row = 0
-    player1._all_pieces[6].column = 0
-    player1._all_pieces[6].location = 2
-    player1._all_pieces[6].alive = True
-    player1._all_pieces[6].in_play = True
-
-    player2._all_pieces[6].row = 0
-    player2._all_pieces[6].column = 1
-    player2._all_pieces[6].location = 2
-    player2._all_pieces[6].alive = True
-    player2._all_pieces[6].in_play = True
-
-
-    game.all_boards[1]._grid[1][0] = player1._all_pieces[2]
-    game.all_boards[1]._grid[0][1] = player1._all_pieces[3]
-    
-    game.all_boards[2]._grid[0][1] = player1._all_pieces[4]
-    # game.all_boards[2]._grid[1][0] = player1._all_pieces[5]
-    game.all_boards[2]._grid[0][0] = player1._all_pieces[6]
-    
-    # game.all_boards[2]._grid[0][1] = player2._all_pieces[6]
-    
-    test = game.enumerate_possible_moves(player1._all_pieces[6].symbol,
-                                        player1._all_pieces[6].row,
-                                        player1._all_pieces[6].column,
-                                        player1._all_pieces[6].location,
-                                        player1)
-       
-    for x in test:
-        print(x, '\n')
-    game.show_game()
-    
-    print(game.better_pieces(player1))
-    
-    
-        
-        
-"""PLAN
-
-Isai: Work on enumerating all possible moves
-+ Add validation checks to CLI 
-+ Look into iterator pattern
-+ Perhaps pick up where Teni left off with move + Perhaps pick up where Teni left off with move -  I think this would look like having CLI validation where if someone wants to move in a certain direction e.g. 
-'e' we check that in our enumerated moves there exists a move with 'e' as the first thing in the tuple
-
-Teni: Implement standard move
-+ Command and decorators
-
-"""
