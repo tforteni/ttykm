@@ -348,8 +348,8 @@ class Caretaker():
             self._mementos.pop()                   
 
 if __name__ == "__main__":
-    player1 = "random"
-    player2 = "random"
+    player1 = "human"
+    player2 = "human"
     history = "off"
     display = "off"
     for index, arg in enumerate(sys.argv[1:], start=1): #What is these vals are invalid?
