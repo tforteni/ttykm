@@ -40,7 +40,6 @@ class PushMove(MoveStrategy):
             "None" : 0}
         pushed_piece = board.occupied(row, column)
         paradox = False
-        # print(f"calling push move on {pushed_piece}")
         if direction == None:
             return
         if not leave_copy:
