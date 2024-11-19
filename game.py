@@ -222,8 +222,9 @@ class Game:
                 if board != x.location["board"]:
                     continue                
                 #if player does own the piece and if the symbol in the moves square does not match the symbol of the original piece
-                if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:  
-                    continue
+                if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:
+                    if not any(x.row == row and x.column == column and x.location == board for x in other._all_pieces):
+                        continue
                 
             # checks to see if the player does not have any pieces in the case of a movement to the past
             if board == x.location["board"] + 1:
