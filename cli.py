@@ -361,6 +361,5 @@ if __name__ == "__main__":
             history = sys.argv[index]
         if index == 4:
             display = sys.argv[index]
-        while 1 == 1:
-            CLI(player1, player2, history, display).run()
+        CLI(player1, player2, history, display).run()
     
