@@ -129,18 +129,12 @@ class CLI:
                 else: 
                     max_value = max(heuristic_moves.values())
                     options = {key for key, value in heuristic_moves.items() if value == max_value}
-                    print(options)
                     move = random.choice(list(options))
-                    # Print the result
-                    # print(move)
                     copy = move[0]
                     piece = self._state.player.owns_piece(str(copy))
-                    # print(piece)
                     move1 = move[1]
                     move2 = move[2]
                     focus_era = eras[move[3]]
-                    # sys.exit(0)
-                    # break
             elif not self._state.player.copies_in_era(self._state.player.focus) or all_player_pieces == 0:
                 print("No copies to move")
                 copy = None
