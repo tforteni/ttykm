@@ -135,7 +135,9 @@ class Game:
         # if len(final_list) == 0:
         #     for x in range(0, len(round1_possible_moves)):
         #         final_list.append((round1_possible_moves[x], None))
-                
+        
+        if not final_list and not final_move_values:
+            return []
         return [final_list, final_move_values]
 
     
