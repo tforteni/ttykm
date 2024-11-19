@@ -83,10 +83,9 @@ class CLI:
                         move1 = str(self.all_move[0])
                         move2 = str(self.all_move[1])
                 
-                eras_dict = {0: "past", 1: "present", 2: "future"}
-                eras_list = ["past", "present", "future"]
-                print(copy, move1, move2)
-                eras_list.remove(eras_dict[self._state.player.focus])
+                dict = {0: "past", 1: "present", 2: "future"}
+                list = ["past", "present", "future"]
+                list.remove(dict[self._state.player.focus])
                 
                 focus_era = random.choice(eras_list)
 
@@ -347,10 +346,6 @@ class Caretaker():
         print("SELF INDEX", self._index, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         while self._mementos[self._index] != self._mementos[-1]:
             self._mementos.pop()                   
-        
-    def show_history(self) -> None:
-        print(self._mementos, "     INDEX", self._index, "       LENGTH", len(self._mementos))
-
 
 if __name__ == "__main__":
     player1 = "random"
