@@ -296,9 +296,7 @@ class Game:
                     if any(x[1] != None for x in possible_moves):
                         return 2
                     else:
-                        return 1
-                        
-                        
+                        return 1                        
                 else:
                     return 0
 
