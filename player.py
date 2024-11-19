@@ -90,6 +90,13 @@ class Player:
         return len(self.copies_in_era(era)) * weight
 
     def calculate_values(self, other):
+        criteria = self.get_values(other)
+        value = 0
+        for i in range(0,4):
+            value += criteria[i]
+        return value
+    
+    def get_values(self, other):
         weights = [3,2,1,1] #this doesn't include focus
         era_prescence = 0
         piece_advantage = 0
@@ -101,21 +108,9 @@ class Player:
             if other.copies_in_era(i):
                 piece_advantage -= len(self.copies_in_era(i))
         supply = len(self._supply())
-        # print(f"HERE IS ALL: {self._all_pieces[0].row}")
         centrality = self._calculate_centrality()
-        # focus = len(self.copies_in_era(self.focus)) #this needs to be integrated after a user has selected an era!!!!!!#############
-        criteria = [era_prescence, piece_advantage, supply, centrality]#, focus]
-        value = 0
-        for i in range(0,4):
-            # value += weights[i] * criteria[i]
-            value += criteria[i]
-        # print(f"era prescence = {era_prescence}")
-        # print(f"piece advantage = {piece_advantage}")
-        # print(f"supply = {supply}")
-        # print(f"centrality = {centrality}")
-        # print(f"focus = {focus}")
-        # print(f"value = {value}") 
-        return value
+        criteria = [era_prescence, piece_advantage, supply, centrality]
+        return criteria
 
     
     def get_move1(self, enumerated_moves):

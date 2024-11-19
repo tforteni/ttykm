@@ -45,8 +45,13 @@ class PushMove(MoveStrategy):
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         if ((direction in ["e", "w"] and (pushed_piece.row + dirs[direction] > 3) or pushed_piece.row + dirs[direction] < 0)) or (direction in ["s", "n"] and (pushed_piece.column + dirs[direction] > 3 or pushed_piece.column + dirs[direction] < 0)):
+            if player.owns_piece(pushed_piece):
+                print("paradox!")
+                sys.exit(0)
+                # board.kill_piece(row, column, piece)
             board.kill_piece(row, column, pushed_piece)
         else:
             board.remove_piece(row, column, piece)
             player.move_piece(pushed_piece, direction, pushed_piece.row, pushed_piece.column, game)
-        board.add_piece(row, column, piece, game.all_boards.index(board))
+        if not player.owns_piece(pushed_piece): #this is new
+            board.add_piece(row, column, piece, game.all_boards.index(board))
