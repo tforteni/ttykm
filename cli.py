@@ -87,7 +87,7 @@ class CLI:
                 eras_list = ["past", "present", "future"]
                 eras_list.remove(eras_dict[self._state.player.focus])
                 
-                focus_era = random.choice(eras_list)
+                focus_era = random.choice(list)
 
             elif self._state.player.type == "heuristic":
                 heuristic_moves = {}
