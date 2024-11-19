@@ -83,12 +83,12 @@ class CLI:
                         move1 = str(self.all_move[0])
                         move2 = str(self.all_move[1])
                 
-                dict = {0: "past", 1: "present", 2: "future"}
-                list = ["past", "present", "future"]
+                eras_dict = {0: "past", 1: "present", 2: "future"}
+                eras_list = ["past", "present", "future"]
                 print(copy, move1, move2)
-                list.remove(dict[self._state.player.focus])
+                eras_list.remove(eras_dict[self._state.player.focus])
                 
-                focus_era = random.choice(list)
+                focus_era = random.choice(eras_list)
 
             elif self._state.player.type == "heuristic":
                 heuristic_moves = {}
@@ -129,6 +129,7 @@ class CLI:
                 else: 
                     max_value = max(heuristic_moves.values())
                     options = {key for key, value in heuristic_moves.items() if value == max_value}
+                    print(options)
                     move = random.choice(list(options))
                     # Print the result
                     # print(move)
