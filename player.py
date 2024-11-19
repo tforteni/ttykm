@@ -84,8 +84,6 @@ class Player:
         if self.type== "human":
             copy = input()
             return str(copy)
-        #elif self.type== "heuristic":
-        #     self._calculate_values()
 
     def get_focus_value(self, era):
         weight = 1
