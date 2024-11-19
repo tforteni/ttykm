@@ -252,11 +252,6 @@ class Game:
         else: 
             self.set_move_strategy(Move())
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
-        # print(piece.in_play)
-        # print(column)
-        # print(f"HERE IS ALL: ({piece.row}, {piece.column}, {piece.location})")
-        # print(f"HERE IS ALL: {self.player2._all_pieces[0].row}")
-        # print(f"HERE IS ALL: {player._all_pieces[0].row}")
         if player == self.player1:
             return player.calculate_values(self.player2)
         else:
