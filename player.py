@@ -84,11 +84,6 @@ class Player:
         if self.type== "human":
             copy = input()
             return str(copy)
-        elif self.type== "random":
-            matching_pieces = [x for x in self._all_pieces if x.location == self.focus and x.alive == True and x.in_play == True]
-            copy = str(random.choice(matching_pieces))
-            print(copy)
-            return copy
         #elif self.type== "heuristic":
         #     self._calculate_values()
 
@@ -128,36 +123,19 @@ class Player:
     def get_move1(self, enumerated_moves):
         if self.type== "human":
             copy = input()
-            return str(copy)
-        elif self.type== "random":
-            self.all_move = random.choice(enumerated_moves)
-            move1 = str(self.all_move[0])
-            print(move1)
-            return move1            
+            return str(copy)         
     
     def get_move2(self, move1, enumerated_moves):
         if self.type== "human":
             copy = input()
             return str(copy)
-        elif self.type== "random":
-            move2 = str(self.all_move[1])
-            print(move2)
-            return move2
     
     def get_focus(self, focus):
         focus = str(focus)
         if self.type== "human":
             copy = input()
             return str(copy)
-        elif self.type== "random":
-            dict = {"0": "past", "1": "present", "2": "future"}
-            list = ["past", "present", "future"]
-            list.remove(dict[focus])
-            
-            copy = random.choice(list)
-            print(copy)
-            return copy
-
+        
 if __name__ == "__main__":
     walter = Player("white", "human")
     

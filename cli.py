@@ -32,20 +32,18 @@ class CLI:
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
             
-            if self.player1.type == "human" or self.player2.type == "human":
+            if (self.player1.type == "human" or self.player2.type == "human") and self._display == "on":
                 print("undo, redo, or next")
                 copy = input()
                 while copy != "next":
                     if copy == "undo":
                         self._caretaker.undo()
                         self._game.show_game()
-                        self._caretaker.show_history()
                         print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
 
                     if copy == "redo":
                         self._caretaker.redo()
                         self._game.show_game()
-                        self._caretaker.show_history()
                         print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     print("undo, redo, or next")
                     copy = input()
@@ -59,7 +57,33 @@ class CLI:
             all_player_pieces = self._game.better_pieces(self._state.player) #This doesn't seem to work for heuristics
 
             eras = ['past', 'present', 'future']
-            if self._state.player.type == "heuristic":
+            if self._state.player.type == "random":
+                matching_pieces = [x for x in self._state.player._all_pieces if x.location == self._state.player.focus and x.alive == True and x.in_play == True]
+                piece = random.choice(matching_pieces)
+                copy = piece.symbol
+                
+                enumerated_moves = self._game.enumerate_possible_moves(piece, piece.symbol,
+                                                    piece.row,
+                                                    piece.column,
+                                                    piece.location,
+                                                    self._state.player,
+                                                    self._state.other)
+                if len(enumerated_moves[0]) == 0:
+                    move1 = None
+                    move2 = None
+                else:
+                    self.all_move = random.choice(enumerated_moves[0])
+                    move1 = str(self.all_move[0])
+                    move2 = str(self.all_move[1])
+                
+                dict = {0: "past", 1: "present", 2: "future"}
+                list = ["past", "present", "future"]
+                print(copy, move1, move2)
+                list.remove(dict[self._state.player.focus])
+                
+                focus_era = random.choice(list)
+
+            elif self._state.player.type == "heuristic":
                 heuristic_moves = {}
                 if (self._state.player.focus == 0):
                     era1 = 1
@@ -165,7 +189,6 @@ class CLI:
                         else:                      
                             break
                 directions = ['n', 'e', 's', 'w', 'f', 'b']
-                print(enumerated_moves)
                 while True:
                     print("Select the first direction to move ", directions)
                     move1 = self._state.player.get_move1(enumerated_moves)
@@ -187,7 +210,7 @@ class CLI:
                         print(f"Cannot move {move2}")
                     else:
                         break
-            if self._state.player.type != "heuristic":
+            if self._state.player.type != "heuristic" and self._state.player.type != "random":
                 while True:
                     print("Select the next era to focus on ['past', 'present', 'future']")
                     focus_era = self._state.player.get_focus(self._state.player.focus)
@@ -354,8 +377,8 @@ class Caretaker():
 
 
 if __name__ == "__main__":
-    player1 = "human"
-    player2 = "human"
+    player1 = "random"
+    player2 = "random"
     history = "off"
     display = "off"
     for index, arg in enumerate(sys.argv[1:], start=1): #What is these vals are invalid?
