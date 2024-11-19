@@ -31,8 +31,7 @@ class TimeMove(MoveStrategy):
 
 class PushMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
-        str(direction)
-        # print("calling push move")
+        # str(direction)
         dirs = {
             "n": -1,
             "e": 1,
@@ -40,18 +39,26 @@ class PushMove(MoveStrategy):
             "w": -1,
             "None" : 0}
         pushed_piece = board.occupied(row, column)
+        paradox = False
+        # print(f"calling push move on {pushed_piece}")
         if direction == None:
             return
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         if ((direction in ["e", "w"] and (pushed_piece.row + dirs[direction] > 3) or pushed_piece.row + dirs[direction] < 0)) or (direction in ["s", "n"] and (pushed_piece.column + dirs[direction] > 3 or pushed_piece.column + dirs[direction] < 0)):
-            if player.owns_piece(pushed_piece):
-                print("paradox!")
-                sys.exit(0)
-                # board.kill_piece(row, column, piece)
-            board.kill_piece(row, column, pushed_piece)
+            if player.owns_piece(piece.symbol) and player.owns_piece(pushed_piece.symbol):
+                paradox = True
+                board.kill_piece(row, column, piece)
+                board.kill_piece(pushed_piece.row, pushed_piece.column, pushed_piece)
+            else:
+                board.kill_piece(row, column, pushed_piece)
         else:
-            board.remove_piece(row, column, piece)
-            player.move_piece(pushed_piece, direction, pushed_piece.row, pushed_piece.column, game)
-        if not player.owns_piece(pushed_piece): #this is new
+            if player.owns_piece(piece.symbol) and player.owns_piece(pushed_piece.symbol):
+                paradox = True
+                board.kill_piece(row, column, piece)
+                board.kill_piece(pushed_piece.row, pushed_piece.column, pushed_piece)
+            else:
+                board.remove_piece(row, column, piece)
+                player.move_piece(pushed_piece, direction, pushed_piece.row, pushed_piece.column, game)
+        if not paradox:
             board.add_piece(row, column, piece, game.all_boards.index(board))
