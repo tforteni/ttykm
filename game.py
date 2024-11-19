@@ -227,7 +227,9 @@ class Game:
                     continue
                 #if player does own the piece and if the symbol in the moves square does not match the symbol of the original piece
                 if player.owns_piece(chosen_piece.symbol) != None and chosen_piece.symbol != symbol:
-                    if not any(y.row == row and y.column == column and y.location == board for y in other.all_pieces) and x.symbol != prev_move:
+                    if any(y.row == row and y.column == column and y.location == board for y in other.all_pieces) and x.symbol != prev_move:
+                        ""
+                    else:
                         continue
                 
             # checks to see if the player does not have any pieces in the case of a movement to the past
