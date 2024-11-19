@@ -45,7 +45,7 @@ class CLI:
                 print(f"white's score: {white_score[0]} eras, {white_score[1]} advantage, {white_score[2]} supply, {white_score[3]} centrality, {white_focus} in focus")
                 print(f"black's score: {black_score[0]} eras, {black_score[1]} advantage, {black_score[2]} supply, {black_score[3]} centrality, {black_focus} in focus")
             
-            if (self.player1.type == "human" or self.player2.type == "human") and self._history == "on":
+            if self._history == "on":
                 self._caretaker.backup()
                 print("undo, redo, or next")
                 copy = input()
@@ -319,19 +319,18 @@ class Caretaker():
         self._index = -1
 
     def backup(self) -> None:
-        print("\nCaretaker: Saving Originator's state...")
+        # print("\nCaretaker: Saving Originator's state...")
         self._mementos.append(self._cli.save())
         self._index += 1
 
     def undo(self) -> None:
-        print("stage A")
+        # print("stage A")
         if not len(self._mementos):
             return
-        print("stage A2")
-        print
+        # print("stage A2")
         if self._index - 1 < 0:
             return
-        print("stage B")
+        # print("stage B")
         memento = self._mementos[self._index - 1]
         self._index += -1
         try:
