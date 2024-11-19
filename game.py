@@ -30,12 +30,12 @@ class Game:
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
             board.add_piece(3,3,piece, index)
-            piece = self.player1.get_next_piece()
-            board.add_piece(3,1,piece, index)
+            # piece = self.player1.get_next_piece()
+            # board.add_piece(3,1,piece, index)
             piece = self.player2.get_next_piece()
             board.add_piece(0,0,piece, index)
-            piece = self.player2.get_next_piece()
-            board.add_piece(3,2,piece, index)
+            # piece = self.player2.get_next_piece()
+            # board.add_piece(3,2,piece, index)
             
     def show_game(self):
         all_boards_repr = []

@@ -224,9 +224,8 @@ class CLI:
             self._turns += 1
             
         again = input("Play again?\n")
-        
         if again == "yes":
-            print("restart game")
+            CLI(player1, player2, history, display).run()
         else:
             sys.exit(0)
 
