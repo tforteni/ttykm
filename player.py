@@ -89,6 +89,9 @@ class Player:
         weight = 2 #this being 1 and the last two elements of criteria weights being set also being 1 also works
         return len(self.copies_in_era(era)) * weight
 
+    def get_unweighted_focus_value(self, era):
+        return len(self.copies_in_era(era))
+
     def calculate_values(self, other):
         weights = [3,6,2,2] #this doesn't include focus
         criteria = self.get_values(other)

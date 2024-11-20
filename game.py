@@ -43,7 +43,7 @@ class Game:
         elif self.player2.focus == 2:
             board_str += "                          "
 
-        board_str += "black\n"
+        board_str += "black  \n"
         
         for x in range(0, 3):
             new_board = self.all_boards[x]
@@ -62,7 +62,7 @@ class Game:
             board_str += "\n              "
         elif self.player1.focus == 2:
             board_str += "\n                          "
-        board_str += "white"            
+        board_str += "white  "            
         print(board_str)
         
     def set_move_strategy(self, move_strategy):
