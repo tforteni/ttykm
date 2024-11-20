@@ -22,6 +22,20 @@ class CLI:
     def set_state(self, new_state):
         """Sets the current state(player)."""
         self._state = new_state
+    
+    def _print_scores(self):
+        if self._state.player == self.player1:
+            white_score = self._state.player.get_values(self._state.other)
+            white_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
+            black_score = self._state.other.get_values(self._state.player)
+            black_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
+        else:
+            black_score = self._state.player.get_values(self._state.other)
+            white_score = self._state.other.get_values(self._state.player)
+            black_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
+            white_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
+        print(f"white's score: {white_score[0]} eras, {white_score[1]} advantage, {white_score[2]} supply, {white_score[3]} centrality, {white_focus} in focus")
+        print(f"black's score: {black_score[0]} eras, {black_score[1]} advantage, {black_score[2]} supply, {black_score[3]} centrality, {black_focus} in focus")
 
     def run(self):
         """Display the game and menu and respond to choices."""
@@ -32,18 +46,19 @@ class CLI:
             #TO DO: Advanced error checking
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
             if self._display == "on":
-                if self._state.player == self.player1:
-                    white_score = self._state.player.get_values(self._state.other)
-                    white_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
-                    black_score = self._state.other.get_values(self._state.player)
-                    black_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
-                else:
-                    black_score = self._state.player.get_values(self._state.other)
-                    white_score = self._state.other.get_values(self._state.player)
-                    black_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
-                    white_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
-                print(f"white's score: {white_score[0]} eras, {white_score[1]} advantage, {white_score[2]} supply, {white_score[3]} centrality, {white_focus} in focus")
-                print(f"black's score: {black_score[0]} eras, {black_score[1]} advantage, {black_score[2]} supply, {black_score[3]} centrality, {black_focus} in focus")
+                self._print_scores()
+                # if self._state.player == self.player1:
+                #     white_score = self._state.player.get_values(self._state.other)
+                #     white_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
+                #     black_score = self._state.other.get_values(self._state.player)
+                #     black_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
+                # else:
+                #     black_score = self._state.player.get_values(self._state.other)
+                #     white_score = self._state.other.get_values(self._state.player)
+                #     black_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
+                #     white_focus = self._state.other.get_unweighted_focus_value(self._state.other.focus)
+                # print(f"white's score: {white_score[0]} eras, {white_score[1]} advantage, {white_score[2]} supply, {white_score[3]} centrality, {white_focus} in focus")
+                # print(f"black's score: {black_score[0]} eras, {black_score[1]} advantage, {black_score[2]} supply, {black_score[3]} centrality, {black_focus} in focus")
             
             if self._history == "on":
                 self._caretaker.backup()
@@ -60,6 +75,7 @@ class CLI:
                         # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     self._game.show_game()
                     print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+                    self._print_scores()
                     print("undo, redo, or next")
                     copy = input()
                 self._caretaker.remove_branches()
