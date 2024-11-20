@@ -52,13 +52,14 @@ class CLI:
                 while copy != "next":
                     if copy == "undo":
                         self._caretaker.undo()
-                        self._game.show_game()
-                        print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
-
-                    if copy == "redo":
+                        # self._game.show_game()
+                        # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+                    elif copy == "redo":
                         self._caretaker.redo()
-                        self._game.show_game()
-                        print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+                        # self._game.show_game()
+                        # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
+                    self._game.show_game()
+                    print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     print("undo, redo, or next")
                     copy = input()
                 self._caretaker.remove_branches()
