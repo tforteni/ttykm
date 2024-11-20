@@ -90,14 +90,15 @@ class Player:
         return len(self.copies_in_era(era)) * weight
 
     def calculate_values(self, other):
+        weights = [4,8,2,2] #this doesn't include focus
         criteria = self.get_values(other)
+        zipped = zip(weights, criteria)
         value = 0
-        for i in range(0,4):
-            value += criteria[i]
+        for w,c in zipped:
+            value += w * c
         return value
     
     def get_values(self, other):
-        weights = [3,2,1,1] #this doesn't include focus
         era_prescence = 0
         piece_advantage = 0
         for i in range(0,3):
@@ -106,7 +107,7 @@ class Player:
                 piece_advantage += len(self.copies_in_era(i))
         for i in range(0,3):
             if other.copies_in_era(i):
-                piece_advantage -= len(self.copies_in_era(i))
+                piece_advantage -= len(other.copies_in_era(i))
         supply = len(self._supply())
         centrality = self._calculate_centrality()
         criteria = [era_prescence, piece_advantage, supply, centrality]

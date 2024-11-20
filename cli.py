@@ -120,28 +120,42 @@ class CLI:
                                                                         piece.location,
                                                                         self._state.player,
                                                                         self._state.other)
-                    for index, move in enumerate(enumerated_moves[0]):
-                        new_val = self._state.player.get_focus_value(era1) + enumerated_moves[1][index]
-                        heuristic_moves[(piece, move[0], move[1], era1)] = new_val
-                        if era2:
-                            new_val = self._state.player.get_focus_value(era2) + enumerated_moves[1][index]
-                            heuristic_moves[(piece, move[0], move[1], era2)] = new_val
+                    # print(enumerated_moves[0])
+                    if enumerated_moves:
+                        for index, move in enumerate(enumerated_moves[0]):
+                            new_val = self._state.player.get_focus_value(era1) + enumerated_moves[1][index]
+                            heuristic_moves[(piece, move[0], move[1], era1)] = new_val
+                            if era2:
+                                # print(enumerated_moves[1][index])
+                                new_val = self._state.player.get_focus_value(era2) + enumerated_moves[1][index]
+                                heuristic_moves[(piece, move[0], move[1], era2)] = new_val
 
                 # print(f"{piece.symbol}, {piece.row}, {piece.column}")
                 # print(enumerated_moves[0])
                 # print(enumerated_moves[1])
-                # print(heuristic_moves)
+                # print(heuristic_moves.values())
 
                 if len(heuristic_moves) == 0:
                     copy = None
                     move1 = None
                     move2 = None
-                    if self._state.player.get_focus_value(era1) > self._state.player.get_focus_value(era2):
-                        focus_era = eras[era1]
+                    if era1 and era2:
+                        era = random.choice([era1, era2])
+                    elif not era1:
+                        era = era2
+                    else:
+                        era = era1
+                    focus_era = eras[era]
+                    # if self._state.player.get_focus_value(era1) > self._state.player.get_focus_value(era2):
+                    #     focus_era = eras[era1]
                 else: 
+                    # print(heuristic_moves)
                     max_value = max(heuristic_moves.values())
-                    options = {key for key, value in heuristic_moves.items() if value == max_value}
+                    # options = {key for key, value in heuristic_moves.items() if value == max_value}
+                    options = {key: value for key, value in heuristic_moves.items() if value == max_value}
+                    # print(options)
                     move = random.choice(list(options))
+                    # print(move)
                     copy = move[0]
                     piece = self._state.player.owns_piece(str(copy))
                     move1 = move[1]
@@ -372,5 +386,10 @@ if __name__ == "__main__":
             history = sys.argv[index]
         if index == 4:
             display = sys.argv[index]
+    # counter = 0
+    # while True:
     CLI(player1, player2, history, display).run()
+        # counter += 1
+        # with open("output.txt", "w") as file:
+        #     print(counter, file=file)
     

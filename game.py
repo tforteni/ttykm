@@ -117,24 +117,31 @@ class Game:
                 game_over = 0
                 if (player_copy == old_game.player1):
                     if old_game.is_over(player_copy, old_game.player2, False):
+                        print(1)
+                        # sys.exit(0)
                         game_over = 9999
                 elif old_game.is_over(player_copy, old_game.player1, False):
-                    game_over = 9999
+                    print(2)
+                    # sys.exit(0)
+                    game_over = -9999
                 val2 = old_game.move_piece_copy(piece_copy, round2_locations[y]["row"], round2_locations[y]["column"], round2_locations[y]["board"], self, player_copy, round2_possible_moves[y])
                 game_over2 = 0
                 if (player_copy == old_game.player1):
                     if old_game.is_over(player_copy, old_game.player2, False):
+                        print(3)
+                        # sys.exit(0)
                         game_over2 = 9999
                 elif old_game.is_over(player_copy, old_game.player1, False):
-                    game_over2 = 9999
-                # print(old_game.all_boards[0])
+                    print(4)
+                    # sys.exit(0)
+                    game_over2 = -9999
                 final_move_values.append(val1 + val2 + game_over + game_over2)
             if len(round2_possible_moves) == 0:
                 final_list.append((round1_possible_moves[x], None))
                 old_game = copy.deepcopy(self)
                 piece_copy = copy.deepcopy(this_piece)
                 val1 = old_game.move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player, round1_possible_moves[x])
-                final_move_values.append((val1, 0))
+                final_move_values.append(val1)
                 
         # NOTICE: IN THE LIST OF POSSIBLE MOVES, IF A DIRECTION CANNOT LEAD TO ANY MORE FOLLOWING DIRECTIONS,
         # THAT DIRECTION AND NONE ARE ADDED TO THE LIST
