@@ -201,7 +201,9 @@ class CLI:
                     print("Select the first direction to move", directions)
                     move1 = self._state.player.get_move1(enumerated_moves)
                     #ADDED: checks to see if the chosen move is within possible moves
-                    if not move1 in directions or all(x[0] != move1 for x in enumerated_moves):
+                    if not move1 in directions:
+                        print("Not a valid direction")
+                    elif all(x[0] != move1 for x in enumerated_moves):
                         print(f"Cannot move {move1}")
                     else:
                         break
