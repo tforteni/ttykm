@@ -86,11 +86,11 @@ class Player:
             return str(copy)
 
     def get_focus_value(self, era):
-        weight = 1
+        weight = 2 #this being 1 and the last two elements of criteria weights being set also being 1 also works
         return len(self.copies_in_era(era)) * weight
 
     def calculate_values(self, other):
-        weights = [4,8,2,2] #this doesn't include focus
+        weights = [3,6,2,2] #this doesn't include focus
         criteria = self.get_values(other)
         zipped = zip(weights, criteria)
         value = 0
