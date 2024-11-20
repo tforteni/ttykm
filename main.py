@@ -198,7 +198,7 @@ class CLI:
                             break
                 directions = ['n', 'e', 's', 'w', 'f', 'b']
                 while True:
-                    print("Select the first direction to move ", directions)
+                    print("Select the first direction to move", directions)
                     move1 = self._state.player.get_move1(enumerated_moves)
                     #ADDED: checks to see if the chosen move is within possible moves
                     if not move1 in directions or all(x[0] != move1 for x in enumerated_moves):
@@ -211,7 +211,7 @@ class CLI:
                         move2 = None
                         break
                     
-                    print("Select the second direction to move ", directions)
+                    print("Select the second direction to move", directions)
                     move2 = self._state.player.get_move2(move1, enumerated_moves)
                     #checks to see if there is one viable move with move1 and move2. If so, move2 is valid
                     if not move2 in directions or not any(x[0] == move1 and x[1] == move2 for x in enumerated_moves):
