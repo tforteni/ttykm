@@ -19,7 +19,7 @@ class CLI:
         self._caretaker = Caretaker(self)
 
 
-    def set_state(self, new_state):
+    def _set_state(self, new_state):
         """Sets the current state(player)."""
         self._state = new_state
     
@@ -40,7 +40,7 @@ class CLI:
     def run(self):
         """Display the game and menu and respond to choices."""
         self._game.build_game()
-        while not self._game.is_over(self._state.player, self._state.other): #Or while the game is not over
+        while not self._game.is_over(self._state.player, self._state.other):
             self._game.show_game()
             print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
             if self._display == "on":
@@ -53,12 +53,8 @@ class CLI:
                 while copy != "next":
                     if copy == "undo":
                         self._caretaker.undo()
-                        # self._game.show_game()
-                        # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     elif copy == "redo":
                         self._caretaker.redo()
-                        # self._game.show_game()
-                        # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     self._game.show_game()
                     print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     if self._display == "on":
@@ -72,7 +68,7 @@ class CLI:
             #1- at least one piece can move once
             #2- at least one piece can move twice
 
-            all_player_pieces = self._game.better_pieces(self._state.player) #This doesn't seem to work for heuristics
+            all_player_pieces = self._game.find_better_pieces(self._state.player)
 
             eras = ['past', 'present', 'future']
             if self._state.player.type == "random":
@@ -130,14 +126,8 @@ class CLI:
                             new_val = self._state.player.get_focus_value(era1) + enumerated_moves[1][index]
                             heuristic_moves[(piece, move[0], move[1], era1)] = new_val
                             if era2:
-                                # print(enumerated_moves[1][index])
                                 new_val = self._state.player.get_focus_value(era2) + enumerated_moves[1][index]
                                 heuristic_moves[(piece, move[0], move[1], era2)] = new_val
-
-                # print(f"{piece.symbol}, {piece.row}, {piece.column}")
-                # print(enumerated_moves[0])
-                # print(enumerated_moves[1])
-                # print(heuristic_moves.values())
 
                 if len(heuristic_moves) == 0:
                     copy = None
@@ -150,16 +140,10 @@ class CLI:
                     else:
                         era = era1
                     focus_era = eras[era]
-                    # if self._state.player.get_focus_value(era1) > self._state.player.get_focus_value(era2):
-                    #     focus_era = eras[era1]
                 else: 
-                    # print(heuristic_moves)
                     max_value = max(heuristic_moves.values())
-                    # options = {key for key, value in heuristic_moves.items() if value == max_value}
                     options = {key: value for key, value in heuristic_moves.items() if value == max_value}
-                    # print(options)
                     move = random.choice(list(options))
-                    # print(move)
                     copy = move[0]
                     piece = self._state.player.owns_piece(str(copy))
                     move1 = move[1]
@@ -204,7 +188,7 @@ class CLI:
                 while True:
                     print("Select the first direction to move", directions)
                     move1 = self._state.player.get_move1(enumerated_moves)
-                    #ADDED: checks to see if the chosen move is within possible moves
+                    #checks to see if the chosen move is within possible moves
                     if not move1 in directions:
                         print("Not a valid direction")
                     elif all(x[0] != move1 for x in enumerated_moves):
@@ -228,8 +212,6 @@ class CLI:
                 while True:
                     print("Select the next era to focus on ['past', 'present', 'future']")
                     focus_era = self._state.player.get_focus(self._state.player.focus)
-                    # if focus_era not in eras or abs(eras.index(focus_era) - self._state.player.focus) > 1:
-                    #CHANGE: slight bug in original, if in past, couldn't move to future
                     if focus_era not in eras or focus_era == self._state.player.focus:
                         print("Not a valid era")
                     elif eras.index(focus_era) == self._state.player.focus:
@@ -239,7 +221,6 @@ class CLI:
             print(f"Selected move: {copy},{move1},{move2},{focus_era}")
             if copy == None:
                 piece = None
-            # print(copy)
             self._state.run_turn(piece, move1, move2, eras.index(focus_era))
             self._turns += 1
             
@@ -291,7 +272,7 @@ class Player1State():
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
-        self._cli.set_state(Player2State(self._cli, self._cli.player2))
+        self._cli._set_state(Player2State(self._cli, self._cli.player2))
 
 class Player2State():
     def __init__(self, cli, player):
@@ -304,7 +285,7 @@ class Player2State():
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
         self.player.focus = era_index
-        self._cli.set_state(Player1State(self._cli, self._cli.player1))
+        self._cli._set_state(Player1State(self._cli, self._cli.player1))
         
 class Memento(ABC):
     """
@@ -339,18 +320,14 @@ class Caretaker():
         self._index = -1
 
     def backup(self) -> None:
-        # print("\nCaretaker: Saving Originator's state...")
         self._mementos.append(self._cli.save())
         self._index += 1
 
     def undo(self) -> None:
-        # print("stage A")
         if not len(self._mementos):
             return
-        # print("stage A2")
         if self._index - 1 < 0:
             return
-        # print("stage B")
         memento = self._mementos[self._index - 1]
         self._index += -1
         try:
@@ -383,7 +360,7 @@ if __name__ == "__main__":
     player2 = "human"
     history = "off"
     display = "off"
-    for index, arg in enumerate(sys.argv[1:], start=1): #What is these vals are invalid?
+    for index, arg in enumerate(sys.argv[1:], start=1):
         if index == 1:
             player1 = sys.argv[index]
         if index == 2:
@@ -392,10 +369,5 @@ if __name__ == "__main__":
             history = sys.argv[index]
         if index == 4:
             display = sys.argv[index]
-    # counter = 0
-    # while True:
     CLI(player1, player2, history, display).run()
-        # counter += 1
-        # with open("output.txt", "w") as file:
-        #     print(counter, file=file)
     

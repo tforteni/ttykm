@@ -8,20 +8,18 @@ class MoveStrategy(ABC):
 
 class Move(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
-        # print("calling basic move")
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         board.add_piece(row, column, piece, game.all_boards.index(board))
 
 class TimeMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
-        # print("calling time travel move")
         dirs = {
             "f": 1,
             "b": -1}
         old_board = game.all_boards[game.all_boards.index(board) - dirs[direction]]
         if direction == "b":
-            leave_copy = True #if copies are 0 then this isn't allowed
+            leave_copy = True
         old_info = [piece.row, piece.column]
         next_piece = player.get_next_piece()
         old_board.remove_piece(piece.row, piece.column, piece)
@@ -31,7 +29,6 @@ class TimeMove(MoveStrategy):
 
 class PushMove(MoveStrategy):
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
-        # str(direction)
         dirs = {
             "n": -1,
             "e": 1,
