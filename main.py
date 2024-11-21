@@ -75,7 +75,8 @@ class CLI:
                         # print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
                     self._game.show_game()
                     print(f"Turn: {self._turns}, Current player: {self._state.player.id}")
-                    self._print_scores()
+                    if self._display == "on":
+                        self._print_scores()
                     print("undo, redo, or next")
                     copy = input()
                 self._caretaker.remove_branches()
@@ -208,7 +209,7 @@ class CLI:
                         if len(enumerated_moves) == 0:
                             print("That copy cannot move")
                         #if chosen piece can only move once, then check if there is at least one pieec that can move twice
-                        elif len(enumerated_moves) == 1:
+                        elif all(p[1] == None for p in enumerated_moves):
                             if all_player_pieces == 2:
                                 print("Select a copy that can move more than once")  
                         else:                      

@@ -314,6 +314,7 @@ class Game:
             prelist.append(x)
         return max(prelist)
     
+    
     def fill_empty_board(self):
         new_all_boards = []
         for x in range(0, 3):
