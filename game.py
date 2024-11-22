@@ -3,8 +3,13 @@ from board import Board
 from movestrategy import Move, PushMove, TimeMove
 
 class Game:
-    
+    '''
+    A class representing a game, specicially "That Time You Killed Me"
+    '''
     def __init__(self, player1, player2, move_strategy=Move()):
+        '''
+        Initializes a Game object with players, 3 Boards, and a move stragegy. 
+        '''
         self.player1 = player1
         self.player2 = player2
         self.all_boards = []
@@ -16,6 +21,9 @@ class Game:
             self.all_boards.append(new_board)
 
     def is_over(self, player, other, print_it=True):
+        '''
+        Determines if a player has won, resulting in the game being over.
+        '''
         eras = [0,0,0]
         eras[0] = len(player.copies_in_era(0))
         eras[1] = len(player.copies_in_era(1))
@@ -26,6 +34,9 @@ class Game:
         return False
 
     def build_game(self): 
+        '''
+        Initializes the three Boards of Game, as well as placing one Piece of each player on one board.  
+        '''
         #Sets up initial game config
         for index, board in enumerate(self.all_boards):
             piece = self.player1.get_next_piece()
@@ -34,6 +45,9 @@ class Game:
             board.add_piece(0,0,piece, index)
             
     def show_game(self):
+        '''
+        Displayes the Game, it's Boards, and it's Pieces.
+        '''
         all_boards_repr = []
         board_str = "---------------------------------\n"
         if self.player2.focus == 0:
@@ -69,6 +83,9 @@ class Game:
         self._strategy = move_strategy
 
     def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
+        '''
+        Moves a piece depending on direction. 
+        '''
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
             game._set_move_strategy(TimeMove())
@@ -79,6 +96,11 @@ class Game:
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
     
     def enumerate_possible_moves(self, this_piece, symbol, row, column, board, player, other):
+        '''
+        Returns a list of all moves a piece is able to make as well as their respective scores. Certain
+        outcomes result in higher or lower scores, such as a game ending win. Certain moves are not added to 
+        the list of possible moves, and if at least one two-move turn exists, no turns with lesser moves are added.
+        '''
         round1 = self._enumerate_possible_moves_helper(this_piece, symbol, row, column, board, player, other)
         round1_possible_moves = round1[0]
         round1_locations = round1[1]
@@ -138,7 +160,6 @@ class Game:
     
     #Assumes the piece is a valid Piece object
     def _enumerate_possible_moves_helper(self, this_piece, symbol, row, column, board, player, other, prev_move = ""):
-        
         # location =  {"column" : piece.column, "row" : piece.row, "board" : piece.location}
         moves_round_one = [North({ "row" : row,"column" : column, "board" : board}), 
                            East({ "row" : row,"column" : column, "board" : board}), 
@@ -211,7 +232,9 @@ class Game:
 
         #TO DO : IMPLEMENT BETTER PIECES. MAYBE USE AN ITERATOR CLASS
     def find_better_pieces(self, player): 
-        
+        '''
+        Utilizes PiecesIterable to determine the maximum number of moves per turn a piece from a Player's Piece choice is able to achieve
+        '''
         iterate_pieces = PiecesIterable(self, player)
         prelist = []
         for x in iterate_pieces:
@@ -219,6 +242,9 @@ class Game:
         return max(prelist)
     
     def fill_empty_board(self):
+        '''
+        Correctly fills in 3 boards according to the Game's Player's Pieces. 
+        '''
         new_all_boards = []
         for x in range(0, 3):
             new_board = Board(4,4)
@@ -233,21 +259,39 @@ class Game:
         return new_all_boards
     
 class PiecesIterable:
+    """
+    An iterable for a player's pieces
+    """
     def __init__(self, game, player):
+        '''
+        Initializes a PiecesIterable instance
+        '''
         self.game = game
         self.player = player
 
     def __iter__(self):
+        '''
+        Allows fot the iteration of a PiecesIterable object.
+        '''
         return PiecesIterator(self.game, self.player)
 
 class PiecesIterator:
+    '''
+    Allows for the iteration of a player's pieces
+    '''
     def __init__(self, game, player):
+        '''
+        Initializes PiecesIterator
+        '''
         self.game = game
         self.player = player
 
         self.index = 0
 
     def __next__(self):
+        '''
+        Returns the max amount of moves a Piece is able to achieve. Allows for iteration. 
+        '''
         if self.index == len(self.player.all_pieces):
             raise StopIteration()
 
@@ -269,50 +313,113 @@ class PiecesIterator:
             return 0
 
     def __iter__(self):
+        '''
+        Helps in the iter functionality
+        '''
         return self
 
 class AbstractCommand:
+    '''
+    An abstract Command aiding in the creation of more spefic commands
+    '''
     def execute(self):
+        '''
+        Excecutes whatever is to be done. 
+        '''
         raise NotImplemented()
 
 class North(AbstractCommand):
+    '''
+    An Command aiding in North movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with a north symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "n"
     def execute(self):
+        '''
+        Changes column value of location based on north movement (plus -1)
+        '''
         self.location["column"] = self.location["column"] - 1 
         
 class East(AbstractCommand):
+    '''
+    An Command aiding in East movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with an east symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "e"
     def execute(self):
+        '''
+        Changes row value of location based on east movement (plus 1)
+        '''
         self.location["row"] = self.location["row"] + 1 
         
 class South(AbstractCommand):
+    '''
+    An Command aiding in South movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with a south symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "s"
     def execute(self):
+        '''
+        Changes column value of location based on south movement (plus 1)
+        '''
         self.location["column"] = self.location["column"] + 1 
 
 class West(AbstractCommand):
+    '''
+    An Command aiding in West movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with a west symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "w"
     def execute(self):
+        '''
+        Changes row value of location based on west movement (plus -1)
+        '''
         self.location["row"] = self.location["row"] - 1 
         
 class Forward(AbstractCommand):
+    '''
+    An Command aiding in Forward movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with a forward symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "f"
     def execute(self):
+        '''
+        Changes board value of location based on forward movement (plus 1)
+        '''
         self.location["board"] = self.location["board"] + 1 
 
 class Backward(AbstractCommand):
+    '''
+    An Command aiding in Backward movement
+    '''
     def __init__(self, location):
+        '''
+        Initializes with a backward symbol and a location dictionary {row, column, board}. 
+        '''
         self.location = location
         self.symbol = "b"
     def execute(self):
+        '''
+        Changes board value of location based on backward movement (plus -1)
+        '''
         self.location["board"] = self.location["board"] - 1 

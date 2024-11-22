@@ -2,18 +2,33 @@ from abc import ABC, abstractmethod
 from board import Board
 
 class MoveStrategy(ABC):
+    '''
+    An abstract class to aid in the creation of more specific move strategies.
+    '''
     @abstractmethod
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
         pass
 
 class Move(MoveStrategy):
+    """
+    A MoveStrategy that moves a piece based on a non-time and non-push move. 
+    """
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
+        '''
+        Moves a piece to a new location. 
+        '''
         if not leave_copy:
             board.remove_piece(piece.row, piece.column, piece)
         board.add_piece(row, column, piece, game.all_boards.index(board))
 
 class TimeMove(MoveStrategy):
+    '''
+    A MoveStrategy that moves a piece based on wheter or not that Piece moved through time.
+    '''
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
+        '''
+        Moves a piece to a new location, as well as determining whether or not a copy must be placed.
+        '''
         dirs = {
             "f": 1,
             "b": -1}
@@ -28,7 +43,14 @@ class TimeMove(MoveStrategy):
         board.add_piece(row, column, piece, game.all_boards.index(board))
 
 class PushMove(MoveStrategy):
+    """
+    A MoveStrategy that moves a piece based on a push move.
+    """
     def move(self, game, piece, row, column, board, player, direction, leave_copy):
+        '''
+        Moves a piece to a new location, as well as determining whether or not a push has resulted in the death
+        of a piece through a push out of the board or a push that caused a paradox.
+        '''
         dirs = {
             "n": -1,
             "e": 1,

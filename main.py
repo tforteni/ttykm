@@ -6,9 +6,13 @@ from game import Game
 from player import Player
 
 class CLI:
-    """Display the CLI menu and respond to choices when run."""
+    '''Display the CLI menu and respond to choices when run.'''
 
     def __init__(self, player1, player2, history, display):
+        '''
+        Initializes a CLI class istance with Players, its Game, the current state, and a Caretaker instance to aid in 
+        undo and redo functionality. 
+        '''
         self.player1 = Player("white", player1)
         self.player2 = Player("black", player2)
         self._game = Game(self.player1, self.player2)
@@ -20,10 +24,13 @@ class CLI:
 
 
     def _set_state(self, new_state):
-        """Sets the current state(player)."""
+        '''Sets the current state(player).'''
         self._state = new_state
     
     def _print_scores(self):
+        '''
+        Prints the current scores of both players
+        '''
         if self._state.player == self.player1:
             white_score = self._state.player.get_values(self._state.other)
             white_focus = self._state.player.get_unweighted_focus_value(self._state.player.focus)
@@ -38,7 +45,7 @@ class CLI:
         print(f"black's score: {black_score[0]} eras, {black_score[1]} advantage, {black_score[2]} supply, {black_score[3]} centrality, {black_focus} in focus")
 
     def run(self):
-        """Display the game and menu and respond to choices."""
+        '''Display the game and menu and respond to choices.'''
         self._game.build_game()
         while not self._game.is_over(self._state.player, self._state.other):
             self._game.show_game()
@@ -231,9 +238,9 @@ class CLI:
             sys.exit(0)
 
     def save(self):
-        """
-        Saves the current state inside a memento.
-        """
+        '''
+        Saves the current state inside a memento through deepcopies of variables.
+        '''
         return ConcreteMemento(copy.deepcopy(self._game), 
                                copy.deepcopy(self._turns),
                                copy.deepcopy(self._state),
@@ -241,9 +248,9 @@ class CLI:
                                copy.deepcopy(self._display))
 
     def restore(self, memento):
-        """
-        Restores the Originator's state from a memento object.
-        """
+        '''
+        Restores the Originator's state from a memento object. Specific reimplementation of relationships and pointers are done.
+        '''
         self._game = copy.deepcopy(memento.get_info()[0])
 
         self.player1 = self._game.player1
@@ -262,12 +269,21 @@ class CLI:
         self._display = copy.deepcopy(memento.get_info()[4])
         
 class Player1State():
+    '''
+    This class represents a Player1State, which aids indicates the Game is currently on Player 1's turn 
+    '''
     def __init__(self, cli, player):
+        '''
+        Initializes with cli, player1, and player2
+        '''
         self._cli = cli
         self.player = player
         self.other = cli.player2
 
     def run_turn(self, piece, move1, move2, era_index):
+        '''
+        Moves piece in accordance to provided moves. Switches to a Player2State afterward
+        '''
         if piece != None:
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
@@ -275,12 +291,21 @@ class Player1State():
         self._cli._set_state(Player2State(self._cli, self._cli.player2))
 
 class Player2State():
+    '''
+    This class represents a Player2tate, which aids indicates the Game is currently on Player 2's turn 
+    '''
     def __init__(self, cli, player):
+        '''
+        Initializes with cli, player1, and player2
+        '''
         self._cli = cli
         self.player = player
         self.other = cli.player1
 
     def run_turn(self, piece, move1, move2, era_index):
+        '''
+        Moves piece in accordance to provided moves. Switches to a Player1State afterward
+        '''
         if piece != None:
             self.player.move_piece(piece, move1, piece.row, piece.column, self._cli._game)
             self.player.move_piece(piece, move2, piece.row, piece.column, self._cli._game)
@@ -288,42 +313,52 @@ class Player2State():
         self._cli._set_state(Player1State(self._cli, self._cli.player1))
         
 class Memento(ABC):
-    """
-    The Memento interface provides a way to retrieve the memento's metadata,
-    such as creation date or name. However, it doesn't expose the Originator's
-    state.
-    """
+    '''
+    The Memento interface provides a way to retrieve the memento's information
+    '''
     @abstractmethod
     def get_info(self) -> str:
         pass
 
 class ConcreteMemento(Memento):
+    '''
+    A class representing a Concrete Memento, which holds important information from a specific turn of a Game
+    '''
     def __init__(self, game, turns, state, history, display):
+        '''
+        Initializes a Memento with information about a game's specific turn
+        '''
         self._info = [game, turns, state, history, display]
 
     def get_info(self):
-        """
+        '''
         The Originator uses this method when restoring its state.
-        """
+        '''
         return self._info
 
 class Caretaker():
-    """
-    The Caretaker doesn't depend on the Concrete Memento class. Therefore, it
-    doesn't have access to the originator's state, stored inside the memento. It
-    works with all mementos via the base Memento interface.
-    """
-
+    '''
+    This class represents a Caretaker object, which handes game turn savings, undoing, and redoing 
+    '''
     def __init__(self, cli) -> None:
+        '''
+        Initializes a Caretaker instance with a list of Mementos and the index tied to the current turn of the CLI
+        '''
         self._mementos = []
         self._cli = cli
         self._index = -1
 
     def backup(self) -> None:
+        '''
+        Calls on CLI's save() to save information to a Memento object and add it to the Caretaker's list
+        '''
         self._mementos.append(self._cli.save())
         self._index += 1
 
     def undo(self) -> None:
+        '''
+        Changes the current game turn to the previous game turn. The index is set to the game turn displayed and "active"
+        '''
         if not len(self._mementos):
             return
         if self._index - 1 < 0:
@@ -336,6 +371,9 @@ class Caretaker():
             self.undo()
     
     def redo(self) -> None:
+        '''
+        Changes the current game turn to the following game turn. The index is set to the game turn displayed and "active"
+        '''
         if not len(self._mementos):
             return
         if self._index + 1 == len(self._mementos):
@@ -350,6 +388,10 @@ class Caretaker():
             self.redo()
             
     def remove_branches(self) -> None:
+        '''
+        Removes all saved Memento objects from a Caretaker's list that go after the "active" turn of the game, 
+        especially when undo's or redo's have been performed. 
+        '''
         if not len(self._mementos):
             return       
         while self._mementos[self._index] != self._mementos[-1]:
