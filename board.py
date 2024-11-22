@@ -3,20 +3,6 @@ from piece import Piece
 class Board(): 
 
     def __init__(self, rows = 4, columns = 4):
-        # class Grid():
-        #     def __init__(self, rows, columns):
-        #         self.grid = []
-        #         for x in range(0, rows):
-        #             self.grid.append([])
-        #             for y in range(0, columns):
-        #                 self.grid[x].append(None)
-                        
-        #     def __getitem__(self, row):
-        #         return self.grid[row]
-
-        #     def __setitem__(self, row, column, value):
-        #         print ("A")
-                
         self._rows = rows
         self._columns = columns 
         self.grid = []
@@ -50,18 +36,8 @@ class Board():
         piece.alive = False
 
     def occupied(self, row, column):
-        # print(f"{row}, {column}")
         return self.grid[row][column]
     
-    def swap_two_spaces(self, row1, column1, row2, column2):
-        holder = self.grid[row1][column1]
-        self.grid[row1][column1] = self.grid[row2][column2]
-        self.grid[row2][column2] = holder
-    
-    def replace_space_with_another(self, row1, column1, row2, column2):
-        self.grid[row2][column2] = self.grid[row1][column1]
-        self.grid[row1][column1] = None
-
     def __repr__(self):
         str = ""
         spacer = ""

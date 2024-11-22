@@ -65,23 +65,21 @@ class Game:
         board_str += "white  "            
         print(board_str)
         
-    def set_move_strategy(self, move_strategy):
+    def _set_move_strategy(self, move_strategy):
         self._strategy = move_strategy
 
     def move_piece(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
-        # print("calling game move piece")
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
-            game.set_move_strategy(TimeMove())
+            game._set_move_strategy(TimeMove())
         elif board.occupied(row, column): #could add check for the kind of piece that occupies it
-            game.set_move_strategy(PushMove())
+            game._set_move_strategy(PushMove())
         else: 
-            game.set_move_strategy(Move())
+            game._set_move_strategy(Move())
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
     
     def enumerate_possible_moves(self, this_piece, symbol, row, column, board, player, other):
-        # print(f"HERE IS ALL: {self.player1.all_pieces}")
-        round1 = self.enumerate_possible_moves_helper(this_piece, symbol, row, column, board, player, other)
+        round1 = self._enumerate_possible_moves_helper(this_piece, symbol, row, column, board, player, other)
         round1_possible_moves = round1[0]
         round1_locations = round1[1]
         final_list = []
@@ -90,7 +88,7 @@ class Game:
         # goes through the possible moves from a "first round", uses the locations after the movement
         # is applied, and then adds all variations to the first round in a list
         for x in range(0, len(round1_possible_moves)):
-            round2 = self.enumerate_possible_moves_helper(this_piece, symbol,
+            round2 = self._enumerate_possible_moves_helper(this_piece, symbol,
                                                           round1_locations[x]["row"],
                                                           round1_locations[x]["column"],
                                                           round1_locations[x]["board"],
@@ -100,40 +98,30 @@ class Game:
 
             for y in range(0, len(round2_possible_moves)):
                 final_list.append((round1_possible_moves[x], round2_possible_moves[y]))
-                # print(f"\n{(round1_possible_moves[x], round2_possible_moves[y])}")
-                # print(f"\n{(round1_locations[x]["row"], round1_locations[x]["column"])}")
                 old_game = copy.deepcopy(self)
                 piece_copy = copy.deepcopy(this_piece)
                 player_copy = copy.deepcopy(player)
                 player_copy.all_pieces[player.all_pieces.index(this_piece)] = piece_copy
-                val1 = old_game.move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player_copy, round1_possible_moves[x])
+                val1 = old_game._move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player_copy, round1_possible_moves[x])
                 game_over = 0
                 if (player_copy == old_game.player1):
                     if old_game.is_over(player_copy, old_game.player2, False):
-                        print(1)
-                        # sys.exit(0)
                         game_over = 9999
                 elif old_game.is_over(player_copy, old_game.player1, False):
-                    print(2)
-                    # sys.exit(0)
                     game_over = -9999
-                val2 = old_game.move_piece_copy(piece_copy, round2_locations[y]["row"], round2_locations[y]["column"], round2_locations[y]["board"], self, player_copy, round2_possible_moves[y])
+                val2 = old_game._move_piece_copy(piece_copy, round2_locations[y]["row"], round2_locations[y]["column"], round2_locations[y]["board"], self, player_copy, round2_possible_moves[y])
                 game_over2 = 0
                 if (player_copy == old_game.player1):
                     if old_game.is_over(player_copy, old_game.player2, False):
-                        print(3)
-                        # sys.exit(0)
                         game_over2 = 9999
                 elif old_game.is_over(player_copy, old_game.player1, False):
-                    print(4)
-                    # sys.exit(0)
                     game_over2 = -9999
                 final_move_values.append(val1 + val2 + game_over + game_over2)
             if len(round2_possible_moves) == 0:
                 final_list.append((round1_possible_moves[x], None))
                 old_game = copy.deepcopy(self)
                 piece_copy = copy.deepcopy(this_piece)
-                val1 = old_game.move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player, round1_possible_moves[x])
+                val1 = old_game._move_piece_copy(piece_copy, round1_locations[x]["row"], round1_locations[x]["column"], round1_locations[x]["board"], self, player, round1_possible_moves[x])
                 final_move_values.append(val1)
                 
         # NOTICE: IN THE LIST OF POSSIBLE MOVES, IF A DIRECTION CANNOT LEAD TO ANY MORE FOLLOWING DIRECTIONS,
@@ -148,15 +136,16 @@ class Game:
         return [final_list, final_move_values]
 
     
-    #Assumes the piece is a piece is a valid Piece object
-    def enumerate_possible_moves_helper(self, this_piece, symbol, row, column, board, player, other, prev_move = ""):        
+    #Assumes the piece is a valid Piece object
+    def _enumerate_possible_moves_helper(self, this_piece, symbol, row, column, board, player, other, prev_move = ""):
+        
         # location =  {"column" : piece.column, "row" : piece.row, "board" : piece.location}
-        moves_round_one = [north({ "row" : row,"column" : column, "board" : board}), 
-                           east({ "row" : row,"column" : column, "board" : board}), 
-                           south({ "row" : row,"column" : column, "board" : board}), 
-                           west({ "row" : row,"column" : column, "board" : board}), 
-                           forward({ "row" : row,"column" : column, "board" : board}), 
-                           backward({ "row" : row,"column" : column, "board" : board})]
+        moves_round_one = [North({ "row" : row,"column" : column, "board" : board}), 
+                           East({ "row" : row,"column" : column, "board" : board}), 
+                           South({ "row" : row,"column" : column, "board" : board}), 
+                           West({ "row" : row,"column" : column, "board" : board}), 
+                           Forward({ "row" : row,"column" : column, "board" : board}), 
+                           Backward({ "row" : row,"column" : column, "board" : board})]
         valid_moves = []
         new_locations = []
         # move_values = []
@@ -205,14 +194,14 @@ class Game:
 
         return [valid_moves, new_locations]#, move_values]
 
-    def move_piece_copy(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
+    def _move_piece_copy(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
-            self.set_move_strategy(TimeMove())
+            self._set_move_strategy(TimeMove())
         elif board.occupied(row, column): #could add check for the kind of piece that occupies it
-            self.set_move_strategy(PushMove())
+            self._set_move_strategy(PushMove())
         else: 
-            self.set_move_strategy(Move())
+            self._set_move_strategy(Move())
         self._strategy.move(self, piece, row, column, board, player, direction, leave_copy)
         if player == self.player1:
             return player.calculate_values(self.player2)
@@ -221,7 +210,7 @@ class Game:
 
 
         #TO DO : IMPLEMENT BETTER PIECES. MAYBE USE AN ITERATOR CLASS
-    def better_pieces(self, player): 
+    def find_better_pieces(self, player): 
         
         iterate_pieces = PiecesIterable(self, player)
         prelist = []
@@ -286,42 +275,42 @@ class AbstractCommand:
     def execute(self):
         raise NotImplemented()
 
-class north(AbstractCommand):
+class North(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "n"
     def execute(self):
         self.location["column"] = self.location["column"] - 1 
         
-class east(AbstractCommand):
+class East(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "e"
     def execute(self):
         self.location["row"] = self.location["row"] + 1 
         
-class south(AbstractCommand):
+class South(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "s"
     def execute(self):
         self.location["column"] = self.location["column"] + 1 
 
-class west(AbstractCommand):
+class West(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "w"
     def execute(self):
         self.location["row"] = self.location["row"] - 1 
         
-class forward(AbstractCommand):
+class Forward(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "f"
     def execute(self):
         self.location["board"] = self.location["board"] + 1 
 
-class backward(AbstractCommand):
+class Backward(AbstractCommand):
     def __init__(self, location):
         self.location = location
         self.symbol = "b"

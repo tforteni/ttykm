@@ -4,9 +4,9 @@ from piece import Piece
 from movestrategy import Move, PushMove
 
 class Player:
-    def __init__(self, id, type):
-        self.type = type
-        self.id = id
+    def __init__(self, player_id, player_type):
+        self.type = player_type
+        self.id = player_id
         self.all_pieces = []
 
         if self.id == "white":
@@ -25,10 +25,6 @@ class Player:
                 new_piece = Piece(str(x+1))
                 self.all_pieces.append(new_piece)
              
-
-    #TO DO: Implement simplest version of move
-    #TO DO LATER: Add viable moves
-
     def copies_in_era(self, era):
         return [piece for piece in self.all_pieces if piece.in_play == True and piece.location == era]
 
@@ -43,6 +39,7 @@ class Player:
         for x in self.all_pieces:
             if x.in_play == False and x.alive == True:
                 return x
+        return None #added this
 
     def _supply(self):
         supply = []
@@ -57,11 +54,9 @@ class Player:
             if x.in_play == True and x.alive == True:
                 if x.row > 0 and x.row < 3 and x.column > 0 and x.column < 3:
                     centrality += 1
-                # print(f"HERE: {x.row, x.column}")
         return centrality
     
     def move_piece(self, piece, direction, row, column, game):
-        # print("calling player move piece\n")
         dirs = {
             "n": -1,
             "e": 1,
@@ -76,8 +71,6 @@ class Player:
             column += dirs[direction]
         if direction in ["f", "b"]:
             board += dirs[direction]
-        # print(piece.row)
-        # print(piece.column)
         game.move_piece(piece, row, column, board, game, self, direction)
            
     def get_piece(self):
@@ -116,7 +109,6 @@ class Player:
         criteria = [era_prescence, piece_advantage, supply, centrality]
         return criteria
 
-    
     def get_move1(self, enumerated_moves):
         if self.type== "human":
             copy = input()
