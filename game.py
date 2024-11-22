@@ -149,53 +149,7 @@ class Game:
 
     
     #Assumes the piece is a piece is a valid Piece object
-    def enumerate_possible_moves_helper(self, this_piece, symbol, row, column, board, player, other, prev_move = ""):
-        class AbstractCommand:
-            def execute(self):
-                raise NotImplemented()
-
-        class north(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "n"
-            def execute(self):
-                self.location["column"] = self.location["column"] - 1 
-                
-        class east(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "e"
-            def execute(self):
-                self.location["row"] = self.location["row"] + 1 
-                
-        class south(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "s"
-            def execute(self):
-                self.location["column"] = self.location["column"] + 1 
-        
-        class west(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "w"
-            def execute(self):
-                self.location["row"] = self.location["row"] - 1 
-                
-        class forward(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "f"
-            def execute(self):
-                self.location["board"] = self.location["board"] + 1 
-
-        class backward(AbstractCommand):
-            def __init__(self, location):
-                self.location = location
-                self.symbol = "b"
-            def execute(self):
-                self.location["board"] = self.location["board"] - 1 
-        
+    def enumerate_possible_moves_helper(self, this_piece, symbol, row, column, board, player, other, prev_move = ""):        
         # location =  {"column" : piece.column, "row" : piece.row, "board" : piece.location}
         moves_round_one = [north({ "row" : row,"column" : column, "board" : board}), 
                            east({ "row" : row,"column" : column, "board" : board}), 
@@ -269,51 +223,11 @@ class Game:
         #TO DO : IMPLEMENT BETTER PIECES. MAYBE USE AN ITERATOR CLASS
     def better_pieces(self, player): 
         
-        class PiecesIterable:
-            def __init__(self, game, player):
-                self.game = game
-                self.player = player
-
-            def __iter__(self):
-                return PiecesIterator(self.game, self.player)
-
-        class PiecesIterator:
-            def __init__(self, game, player):
-                self.game = game
-                self.player = player
-
-                self.index = 0
-
-            def __next__(self):
-                if self.index == len(self.player.all_pieces):
-                    raise StopIteration()
-
-                piece = self.player.all_pieces[self.index]
-                if self.player == self.game.player1:
-                    other = self.game.player2
-                else:
-                    other = self.game.player1
-                self.index += 1 
-                if piece.alive == True and piece.in_play == True and piece.location == self.player.focus:
-                    possible_moves = self.game.enumerate_possible_moves(piece, piece.symbol, piece.row, piece.column, piece.location, self.player, other)
-                    if len(possible_moves) == 0:
-                        return 0
-                    if any(len(x) > 1 and x[1] != None for x in possible_moves):
-                        return 2
-                    else:
-                        return 1                        
-                else:
-                    return 0
-
-            def __iter__(self):
-                return self
-
         iterate_pieces = PiecesIterable(self, player)
         prelist = []
         for x in iterate_pieces:
             prelist.append(x)
         return max(prelist)
-    
     
     def fill_empty_board(self):
         new_all_boards = []
@@ -328,3 +242,88 @@ class Game:
             if x.row != -1 or x.column != -1 or x.location != -1:
                 new_all_boards[x.location].grid[x.row][x.column] = x
         return new_all_boards
+    
+class PiecesIterable:
+    def __init__(self, game, player):
+        self.game = game
+        self.player = player
+
+    def __iter__(self):
+        return PiecesIterator(self.game, self.player)
+
+class PiecesIterator:
+    def __init__(self, game, player):
+        self.game = game
+        self.player = player
+
+        self.index = 0
+
+    def __next__(self):
+        if self.index == len(self.player.all_pieces):
+            raise StopIteration()
+
+        piece = self.player.all_pieces[self.index]
+        if self.player == self.game.player1:
+            other = self.game.player2
+        else:
+            other = self.game.player1
+        self.index += 1 
+        if piece.alive == True and piece.in_play == True and piece.location == self.player.focus:
+            possible_moves = self.game.enumerate_possible_moves(piece, piece.symbol, piece.row, piece.column, piece.location, self.player, other)
+            if len(possible_moves) == 0:
+                return 0
+            if any(len(x) > 1 and x[1] != None for x in possible_moves):
+                return 2
+            else:
+                return 1                        
+        else:
+            return 0
+
+    def __iter__(self):
+        return self
+
+class AbstractCommand:
+    def execute(self):
+        raise NotImplemented()
+
+class north(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "n"
+    def execute(self):
+        self.location["column"] = self.location["column"] - 1 
+        
+class east(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "e"
+    def execute(self):
+        self.location["row"] = self.location["row"] + 1 
+        
+class south(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "s"
+    def execute(self):
+        self.location["column"] = self.location["column"] + 1 
+
+class west(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "w"
+    def execute(self):
+        self.location["row"] = self.location["row"] - 1 
+        
+class forward(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "f"
+    def execute(self):
+        self.location["board"] = self.location["board"] + 1 
+
+class backward(AbstractCommand):
+    def __init__(self, location):
+        self.location = location
+        self.symbol = "b"
+    def execute(self):
+        self.location["board"] = self.location["board"] - 1 
