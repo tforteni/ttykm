@@ -89,7 +89,7 @@ class Game:
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
             game._set_move_strategy(TimeMove())
-        elif board.occupied(row, column): #could add check for the kind of piece that occupies it
+        elif board.occupied(row, column):
             game._set_move_strategy(PushMove())
         else: 
             game._set_move_strategy(Move())
@@ -149,10 +149,6 @@ class Game:
         # NOTICE: IN THE LIST OF POSSIBLE MOVES, IF A DIRECTION CANNOT LEAD TO ANY MORE FOLLOWING DIRECTIONS,
         # THAT DIRECTION AND NONE ARE ADDED TO THE LIST
         
-        # if len(final_list) == 0:
-        #     for x in range(0, len(round1_possible_moves)):
-        #         final_list.append((round1_possible_moves[x], None))
-        
         if not final_list and not final_move_values:
             return []
         return [final_list, final_move_values]
@@ -169,7 +165,6 @@ class Game:
                            Backward({ "row" : row,"column" : column, "board" : board})]
         valid_moves = []
         new_locations = []
-        # move_values = []
         
         for x in moves_round_one:
             x.execute()
@@ -213,13 +208,13 @@ class Game:
             valid_moves.append(x.symbol)
             new_locations.append(x.location)
 
-        return [valid_moves, new_locations]#, move_values]
+        return [valid_moves, new_locations]
 
     def _move_piece_copy(self, piece, row, column, board_id, game, player, direction, leave_copy=False):
         board = self.all_boards[board_id]
         if direction in ["f", "b"]:
             self._set_move_strategy(TimeMove())
-        elif board.occupied(row, column): #could add check for the kind of piece that occupies it
+        elif board.occupied(row, column):
             self._set_move_strategy(PushMove())
         else: 
             self._set_move_strategy(Move())
@@ -229,8 +224,6 @@ class Game:
         else:
             return player.calculate_values(self.player1) #changed all instances of old_game to self since i am calling this method on old_game.
 
-
-        #TO DO : IMPLEMENT BETTER PIECES. MAYBE USE AN ITERATOR CLASS
     def find_better_pieces(self, player): 
         '''
         Utilizes PiecesIterable to determine the maximum number of moves per turn a piece from a Player's Piece choice is able to achieve
